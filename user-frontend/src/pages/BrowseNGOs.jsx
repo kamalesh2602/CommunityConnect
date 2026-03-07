@@ -13,7 +13,7 @@ const BrowseNGOs = () => {
     const fetchNGOs = async () => {
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/admin/ngos`, config); // Instead of public ngos, admin/ngos returns all. Let's make sure it's public. Wait, volunteer needs a route to get verified NGOs or we filter here.
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/volunteer/ngos`, config);
             // Oh wait, admin protected route returns all. I need to get requirements with populated NGO, or create a public NGO route.
             // Wait, we can fetch all requirements which are public and populated with verified NGOs and extract the unique NGOs! Or I'll filter admin route if auth works? Admin route is protected by `authAdmin`. So volunteer can't access `/admin/ngos`. 
             // I'll need to fetch `/requirements` which gets verified NGOs, then extract unique ones.
