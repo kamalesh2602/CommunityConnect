@@ -10,8 +10,8 @@ const volunteerSchema = new mongoose.Schema({
     followedNGOs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'NGO' }],
 }, { timestamps: true });
 
-volunteerSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+volunteerSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
     this.password = await bcrypt.hash(this.password, 10);
 });
 

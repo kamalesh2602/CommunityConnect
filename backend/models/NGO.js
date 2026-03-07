@@ -13,8 +13,8 @@ const ngoSchema = new mongoose.Schema({
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Volunteer' }],
 }, { timestamps: true });
 
-ngoSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+ngoSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
     this.password = await bcrypt.hash(this.password, 10);
 });
 
