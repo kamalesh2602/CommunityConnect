@@ -85,4 +85,14 @@ const getFollowedNGOs = async (req, res) => {
     }
 };
 
-module.exports = { registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs };
+// Get Verified NGOs
+const getVerifiedNGOs = async (req, res) => {
+    try {
+        const verifiedNGOs = await NGO.find({ verified: true }).select('-password');
+        res.json(verifiedNGOs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs, getVerifiedNGOs };
