@@ -95,4 +95,67 @@ const getVerifiedNGOs = async (req, res) => {
     }
 };
 
-module.exports = { registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs, getVerifiedNGOs };
+// Forgot Password
+const forgotPasswordVolunteer = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const volunteer = await Volunteer.findOne({ email });
+
+        if (!volunteer) {
+            return res.status(404).json({ message: 'Volunteer not found with this email' });
+        }
+
+        const resetToken = volunteer.getResetPasswordToken();
+        await volunteer.save({ validateBeforeSave: false });
+
+        // In a real app, send email here. For now, return token (simulated)
+        console.log(`Reset Token for ${email}: ${resetToken}`);
+
+        res.json({
+            message: 'Email sent (simulated)',
+            resetToken // Only for development/testing convenience
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Reset Password
+const resetPasswordVolunteer = async (req, res) => {
+    try {
+        const crypto = require('crypto');
+        const resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(req.params.resetToken)
+            .digest('hex');
+
+        const volunteer = await Volunteer.findOne({
+            resetPasswordToken,
+            resetPasswordExpire: { $gt: Date.now() }
+        });
+
+        if (!volunteer) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        volunteer.password = req.body.password;
+        volunteer.resetPasswordToken = undefined;
+        volunteer.resetPasswordExpire = undefined;
+
+        await volunteer.save();
+
+        res.json({ message: 'Password reset successful' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = {
+    registerVolunteer,
+    loginVolunteer,
+    followNGO,
+    getFollowedNGOs,
+    getVerifiedNGOs,
+    forgotPasswordVolunteer,
+    resetPasswordVolunteer
+};
