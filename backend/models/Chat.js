@@ -7,7 +7,8 @@ const chatSchema = new mongoose.Schema({
         {
             sender: { type: String, enum: ['NGO', 'Volunteer'], required: true },
             text: { type: String, required: true },
-            timestamp: { type: Date, default: Date.now }
+            timestamp: { type: Date, default: Date.now },
+            isRead: { type: Boolean, default: false }
         }
     ]
 }, { timestamps: true });

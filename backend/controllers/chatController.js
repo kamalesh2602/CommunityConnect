@@ -21,7 +21,8 @@ const sendMessage = async (req, res) => {
 
         chat.messages.push({
             sender: senderRole,
-            text
+            text,
+            isRead: false
         });
 
         await chat.save();
@@ -62,4 +63,57 @@ const getNgoChats = async (req, res) => {
     } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-module.exports = { sendMessage, getMessages, getVolunteerChats, getNgoChats };
+// @route   GET /api/chat/unread-count
+// @access  Private
+const getUnreadCount = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const role = req.user.role === 'ngo' ? 'Volunteer' : 'NGO'; // We want to count messages sent by the OTHER party
+        
+        const filter = req.user.role === 'ngo' 
+            ? { ngoId: userId } 
+            : { volunteerId: userId };
+
+        const chats = await Chat.find(filter);
+        let unreadCount = 0;
+
+        chats.forEach(chat => {
+            chat.messages.forEach(msg => {
+                if (!msg.isRead && msg.sender === role) {
+                    unreadCount++;
+                }
+            });
+        });
+
+        res.json({ unreadCount });
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// @route   PUT /api/chat/mark-read/:otherId
+// @access  Private
+const markAsRead = async (req, res) => {
+    try {
+        const { otherId } = req.params;
+        const userId = req.user._id;
+        const role = req.user.role === 'ngo' ? 'Volunteer' : 'NGO';
+
+        const filter = req.user.role === 'ngo'
+            ? { ngoId: userId, volunteerId: otherId }
+            : { volunteerId: userId, ngoId: otherId };
+
+        const chat = await Chat.findOne(filter);
+
+        if (chat) {
+            chat.messages.forEach(msg => {
+                if (msg.sender === role) {
+                    msg.isRead = true;
+                }
+            });
+            await chat.save();
+        }
+
+        res.json({ message: 'Messages marked as read' });
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+module.exports = { sendMessage, getMessages, getVolunteerChats, getNgoChats, getUnreadCount, markAsRead };

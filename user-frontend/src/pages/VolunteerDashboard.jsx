@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { Heart, MessageCircle, Building2 } from 'lucide-react';
+import { Heart, MessageCircle, Building2, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const VolunteerDashboard = () => {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         followedNGOs: 0,
         donatedAmount: 0,
-        donationsCount: 0
+        donationsCount: 0,
+        unreadMessages: 0
     });
     const [donations, setDonations] = useState([]);
 
@@ -24,10 +27,14 @@ const VolunteerDashboard = () => {
                 // Fetch Followed NGOs
                 const { data: followedData } = await axios.get(`${import.meta.env.VITE_API_URL}/volunteer/followed-ngos`, config);
 
+                // Fetch Unread Messages
+                const { data: unreadData } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/unread-count`, config);
+
                 setStats({
                     followedNGOs: followedData.length,
                     donatedAmount: totalDonated,
-                    donationsCount: donationsData.length
+                    donationsCount: donationsData.length,
+                    unreadMessages: unreadData.unreadCount
                 });
 
             } catch (error) {
@@ -61,8 +68,8 @@ const VolunteerDashboard = () => {
                     </div>
                 </div>
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6">
-                    <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
-                        <MessageCircle size={28} />
+                    <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
+                        <Heart size={28} className="text-amber-500" />
                     </div>
                     <div>
                         <p className="text-gray-500 font-medium mb-1">Total Donations</p>

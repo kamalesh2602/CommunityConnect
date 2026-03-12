@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, MessageSquare } from 'lucide-react';
 
 const VolunteerChat = () => {
     const { user } = useContext(AuthContext);
@@ -13,11 +13,21 @@ const VolunteerChat = () => {
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [chatList, setChatList] = useState([]);
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
         if (!ngoId) {
-            navigate('/volunteer/ngos');
+            const fetchChats = async () => {
+                try {
+                    const config = { headers: { Authorization: `Bearer ${user.token}` } };
+                    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/volunteer`, config);
+                    setChatList(data);
+                } catch (error) {
+                    console.error('Failed fetching chat list', error);
+                }
+            };
+            fetchChats();
             return;
         }
 
@@ -26,6 +36,8 @@ const VolunteerChat = () => {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/messages/${ngoId}/${user._id}`, config);
                 setMessages(data);
+                // Mark as read
+                await axios.put(`${import.meta.env.VITE_API_URL}/chat/mark-read/${ngoId}`, {}, config);
             } catch (error) {
                 console.error(error);
             }
@@ -34,7 +46,7 @@ const VolunteerChat = () => {
         fetchMessages();
         const interval = setInterval(fetchMessages, 3000);
         return () => clearInterval(interval);
-    }, [ngoId, user, navigate]);
+    }, [ngoId, user]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,7 +54,7 @@ const VolunteerChat = () => {
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() || !ngoId) return;
 
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
@@ -57,6 +69,52 @@ const VolunteerChat = () => {
         }
     };
 
+    if (!ngoId) {
+        return (
+            <div className="py-8">
+                <h1 className="text-3xl font-black text-gray-900 mb-8 tracking-tight">Your Conversations</h1>
+                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    {chatList.length > 0 ? (
+                        <div className="divide-y divide-gray-100">
+                            {chatList.map(chat => (
+                                <div key={chat._id} className="p-6 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-lg">
+                                            {chat.ngoId?.ngoName?.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-gray-900 text-lg">{chat.ngoId?.ngoName || 'NGO deleted'}</h3>
+                                            <p className="text-sm text-gray-500 mt-1">
+                                                {chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text.substring(0, 50) + '...' : 'No messages yet'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => navigate('/volunteer/chat', { state: { ngoId: chat.ngoId?._id, ngoName: chat.ngoId?.ngoName } })}
+                                        className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm"
+                                    >
+                                        Open Chat
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="p-16 text-center text-gray-500 bg-gray-50/30">
+                            <MessageSquare size={48} className="mx-auto text-gray-300 mb-4" />
+                            <p className="font-medium text-lg">No active conversations. Start by messaging an NGO from the directory!</p>
+                            <button 
+                                onClick={() => navigate('/volunteer/ngos')}
+                                className="mt-6 bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                            >
+                                Browse NGOs
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col h-[calc(100vh-8rem)] max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center gap-4 bg-gray-50/50">
@@ -68,7 +126,7 @@ const VolunteerChat = () => {
                 </button>
                 <div>
                     <h2 className="text-xl font-black text-gray-900 leading-tight">{ngoName}</h2>
-                    <p className="text-xs text-emerald-600 font-bold tracking-wide uppercase mt-0.5">• Online</p>
+                    <p className="text-xs text-emerald-600 font-bold tracking-wide uppercase mt-0.5">• Active NGO</p>
                 </div>
             </div>
 

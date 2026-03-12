@@ -85,4 +85,127 @@ const getFollowedNGOs = async (req, res) => {
     }
 };
 
+<<<<<<< Updated upstream
 module.exports = { registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs };
+=======
+// Get Verified NGOs
+const getVerifiedNGOs = async (req, res) => {
+    try {
+        const verifiedNGOs = await NGO.find({ verified: true }).select('-password');
+        res.json(verifiedNGOs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Forgot Password
+const forgotPasswordVolunteer = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const volunteer = await Volunteer.findOne({ email });
+
+        if (!volunteer) {
+            return res.status(404).json({ message: 'Volunteer not found with this email' });
+        }
+
+        const resetToken = volunteer.getResetPasswordToken();
+        await volunteer.save({ validateBeforeSave: false });
+
+        // In a real app, send email here. For now, return token (simulated)
+        console.log(`Reset Token for ${email}: ${resetToken}`);
+
+        res.json({
+            message: 'Email sent (simulated)',
+            resetToken // Only for development/testing convenience
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Reset Password
+const resetPasswordVolunteer = async (req, res) => {
+    try {
+        const crypto = require('crypto');
+        const resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(req.params.resetToken)
+            .digest('hex');
+
+        const volunteer = await Volunteer.findOne({
+            resetPasswordToken,
+            resetPasswordExpire: { $gt: Date.now() }
+        });
+
+        if (!volunteer) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        volunteer.password = req.body.password;
+        volunteer.resetPasswordToken = undefined;
+        volunteer.resetPasswordExpire = undefined;
+
+        await volunteer.save();
+
+        res.json({ message: 'Password reset successful' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Get Volunteer Profile
+const getVolunteerProfile = async (req, res) => {
+    try {
+        const volunteer = await Volunteer.findById(req.user._id).select('-password');
+        if (volunteer) {
+            res.json(volunteer);
+        } else {
+            res.status(404).json({ message: 'Volunteer not found' });
+        }
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// Update Volunteer Profile
+const updateVolunteerProfile = async (req, res) => {
+    try {
+        const volunteer = await Volunteer.findById(req.user._id);
+
+        if (volunteer) {
+            volunteer.name = req.body.name || volunteer.name;
+            volunteer.email = req.body.email || volunteer.email;
+            volunteer.phone = req.body.phone || volunteer.phone;
+            volunteer.aadhar = req.body.aadhar || volunteer.aadhar;
+
+            if (req.body.password) {
+                volunteer.password = req.body.password;
+            }
+
+            const updatedVolunteer = await volunteer.save();
+
+            res.json({
+                _id: updatedVolunteer._id,
+                name: updatedVolunteer.name,
+                email: updatedVolunteer.email,
+                phone: updatedVolunteer.phone,
+                aadhar: updatedVolunteer.aadhar,
+                role: 'volunteer',
+                token: generateToken(updatedVolunteer._id, 'volunteer')
+            });
+        } else {
+            res.status(404).json({ message: 'Volunteer not found' });
+        }
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+module.exports = {
+    registerVolunteer,
+    loginVolunteer,
+    followNGO,
+    getFollowedNGOs,
+    getVerifiedNGOs,
+    forgotPasswordVolunteer,
+    resetPasswordVolunteer,
+    getVolunteerProfile,
+    updateVolunteerProfile
+};
+>>>>>>> Stashed changes
