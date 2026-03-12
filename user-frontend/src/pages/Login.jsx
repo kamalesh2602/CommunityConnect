@@ -90,7 +90,7 @@ const Login = () => {
                                 required
                             />
                             <div className="flex justify-end mt-1">
-                                <Link to={`/forgot-password?role=${role}`} className="text-xs font-bold text-blue-600 hover:text-blue-800">
+                                <Link to={`/forgot-password?role=${role}${email ? `&email=${email}` : ''}`} className="text-xs font-bold text-blue-600 hover:text-blue-800">
                                     Forgot password?
                                 </Link>
                             </div>
