@@ -11,15 +11,31 @@ const ngoSchema = new mongoose.Schema({
     address: { type: String, required: true },
     verified: { type: Boolean, default: false },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Volunteer' }],
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
 }, { timestamps: true });
 
-ngoSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+ngoSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
     this.password = await bcrypt.hash(this.password, 10);
 });
 
 ngoSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+ngoSchema.methods.getResetPasswordToken = function () {
+    const crypto = require('crypto');
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    return resetToken;
 };
 
 module.exports = mongoose.model('NGO', ngoSchema);

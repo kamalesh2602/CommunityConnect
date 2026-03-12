@@ -64,9 +64,9 @@ const getNGOFollowers = async (req, res) => {
     }
 };
 
-<<<<<<< Updated upstream
+
 module.exports = { registerNGO, loginNGO, getNGOFollowers };
-=======
+
 // Forgot Password
 const forgotPasswordNGO = async (req, res) => {
     try {
@@ -176,4 +176,6 @@ module.exports = {
     getNGOProfile,
     updateNGOProfile
 };
->>>>>>> Stashed changes
+
+    resetPasswordNGO
+};

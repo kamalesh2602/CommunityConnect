@@ -85,9 +85,7 @@ const getFollowedNGOs = async (req, res) => {
     }
 };
 
-<<<<<<< Updated upstream
 module.exports = { registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs };
-=======
 // Get Verified NGOs
 const getVerifiedNGOs = async (req, res) => {
     try {
@@ -208,4 +206,5 @@ module.exports = {
     getVolunteerProfile,
     updateVolunteerProfile
 };
->>>>>>> Stashed changes
+    resetPasswordVolunteer
+};
