@@ -1,6 +1,8 @@
 const Volunteer = require('../models/Volunteer');
 const NGO = require('../models/NGO');
 const generateToken = require('../utils/generateToken');
+const sendEmail = require('../utils/sendemails');
+const crypto = require('crypto');
 
 // Register Volunteer
 const registerVolunteer = async (req, res) => {
@@ -25,10 +27,12 @@ const registerVolunteer = async (req, res) => {
                 token: generateToken(volunteer._id, 'volunteer')
             });
         }
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // Login Volunteer
 const loginVolunteer = async (req, res) => {
@@ -48,82 +52,134 @@ const loginVolunteer = async (req, res) => {
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
         }
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
+
 // Follow NGO
 const followNGO = async (req, res) => {
     try {
         const { ngoId } = req.body;
+
         const volunteer = await Volunteer.findById(req.user._id);
         const ngo = await NGO.findById(ngoId);
 
         if (!ngo) return res.status(404).json({ message: 'NGO not found' });
 
         if (!volunteer.followedNGOs.includes(ngoId)) {
+
             volunteer.followedNGOs.push(ngoId);
             await volunteer.save();
 
             ngo.followers.push(volunteer._id);
             await ngo.save();
         }
+
         res.json({ message: 'NGO followed successfully' });
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // Get Followed NGOs
 const getFollowedNGOs = async (req, res) => {
     try {
-        const volunteer = await Volunteer.findById(req.user._id).populate('followedNGOs', '-password');
+        const volunteer = await Volunteer
+            .findById(req.user._id)
+            .populate('followedNGOs', '-password');
+
         res.json(volunteer.followedNGOs);
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // Get Verified NGOs
 const getVerifiedNGOs = async (req, res) => {
     try {
-        const verifiedNGOs = await NGO.find({ verified: true }).select('-password');
+
+        const verifiedNGOs = await NGO
+            .find({ verified: true })
+            .select('-password');
+
         res.json(verifiedNGOs);
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
+
 
 // Forgot Password
 const forgotPasswordVolunteer = async (req, res) => {
+
     try {
+
         const { email } = req.body;
+
         const volunteer = await Volunteer.findOne({ email });
 
         if (!volunteer) {
-            return res.status(404).json({ message: 'Volunteer not found with this email' });
+            return res.status(404).json({
+                message: 'Volunteer not found with this email'
+            });
         }
 
+        // generate reset token
         const resetToken = volunteer.getResetPasswordToken();
+
         await volunteer.save({ validateBeforeSave: false });
 
-        // In a real app, send email here. For now, return token (simulated)
-        console.log(`Reset Token for ${email}: ${resetToken}`);
+        // reset link
+        const resetUrl =
+            `http://localhost:5173/reset-password/${resetToken}?role=volunteer`;
+
+        const message = `
+You requested a password reset.
+
+Click the link below to reset your password:
+
+${resetUrl}
+
+If you did not request this, please ignore this email.
+`;
+
+        // send email
+        await sendEmail(
+            volunteer.email,
+            "Volunteer Password Reset",
+            message
+        );
 
         res.json({
-            message: 'Email sent (simulated)',
-            resetToken // Only for development/testing convenience
+            message: "Password reset link sent to your email"
         });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+
+        console.error(error);
+
+        res.status(500).json({
+            message: "Error sending email"
+        });
     }
 };
 
+
+
 // Reset Password
 const resetPasswordVolunteer = async (req, res) => {
+
     try {
-        const crypto = require('crypto');
+
         const resetPasswordToken = crypto
             .createHash('sha256')
             .update(req.params.resetToken)
@@ -135,20 +191,30 @@ const resetPasswordVolunteer = async (req, res) => {
         });
 
         if (!volunteer) {
-            return res.status(400).json({ message: 'Invalid or expired reset token' });
+            return res.status(400).json({
+                message: 'Invalid or expired reset token'
+            });
         }
 
         volunteer.password = req.body.password;
+
         volunteer.resetPasswordToken = undefined;
         volunteer.resetPasswordExpire = undefined;
 
         await volunteer.save();
 
-        res.json({ message: 'Password reset successful' });
+        res.json({
+            message: 'Password reset successful'
+        });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+
+        res.status(500).json({
+            message: error.message
+        });
     }
 };
+
 
 module.exports = {
     registerVolunteer,

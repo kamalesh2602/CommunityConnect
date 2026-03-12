@@ -1,5 +1,7 @@
 const NGO = require('../models/NGO');
 const generateToken = require('../utils/generateToken');
+const sendEmail = require('../utils/sendemails');
+const crypto = require('crypto');
 
 // Register NGO
 const registerNGO = async (req, res) => {
@@ -77,22 +79,38 @@ const forgotPasswordNGO = async (req, res) => {
         const resetToken = ngo.getResetPasswordToken();
         await ngo.save({ validateBeforeSave: false });
 
-        // In a real app, send email here. For now, return token (simulated)
-        console.log(`Reset Token for ${email}: ${resetToken}`);
+        // reset link
+        const resetUrl = `http://localhost:5173/reset-password/${resetToken}?role=ngo`;
+
+        const message = `
+You requested a password reset.
+
+Click the link below to reset your password:
+
+${resetUrl}
+
+If you did not request this, please ignore this email.
+`;
+
+        // send email
+        await sendEmail(
+            ngo.email,
+            "NGO Password Reset",
+            message
+        );
 
         res.json({
-            message: 'Email sent (simulated)',
-            resetToken // Only for development/testing convenience
+            message: "Password reset link sent to your email"
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: "Error sending email" });
     }
 };
 
 // Reset Password
 const resetPasswordNGO = async (req, res) => {
     try {
-        const crypto = require('crypto');
         const resetPasswordToken = crypto
             .createHash('sha256')
             .update(req.params.resetToken)

@@ -24,13 +24,7 @@ const ForgotPassword = () => {
             const endpoint = role === 'volunteer' ? '/volunteer/forgot-password' : '/ngo/forgot-password';
 
             const res = await axios.post(`${apiBaseUrl}${endpoint}`, { email });
-            setMessage('A password reset link has been sent to your email. (Simulated)');
-
-            // For development purposes, if the backend returns the token, we could log it or show it
-            if (res.data.resetToken) {
-                console.log('Reset Token:', res.data.resetToken);
-                setMessage(`Reset link: http://localhost:5173/reset-password/${res.data.resetToken}?role=${role}`);
-            }
+            setMessage('A password reset link has been sent to your email.');
         } catch (err) {
             setError(err.response?.data?.message || 'Something went wrong. Please try again.');
         } finally {
