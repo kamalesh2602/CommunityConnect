@@ -65,7 +65,7 @@ const getNGOFollowers = async (req, res) => {
 };
 
 
-module.exports = { registerNGO, loginNGO, getNGOFollowers };
+
 
 // Forgot Password
 const forgotPasswordNGO = async (req, res) => {
@@ -175,7 +175,4 @@ module.exports = {
     resetPasswordNGO,
     getNGOProfile,
     updateNGOProfile
-};
-
-    resetPasswordNGO
 };

@@ -1,6 +1,5 @@
 const Volunteer = require('../models/Volunteer');
 const NGO = require('../models/NGO');
-const Message = require('../models/Message'); // Ensure this model exists for the notification count
 const generateToken = require('../utils/generateToken');
 const crypto = require('crypto');
 
@@ -135,16 +134,10 @@ const followNGO = async (req, res) => {
     }
 };
 
-// --- 4. CHAT NOTIFICATIONS (Badge Logic) ---
-
-const getUnreadMessageCount = async (req, res) => {
+const getFollowedNGOs = async (req, res) => {
     try {
-        // WhatsApp-style logic: counts unread messages for the logged-in user
-        const unreadCount = await Message.countDocuments({
-            recipient: req.user._id,
-            isRead: false
-        });
-        res.json({ unreadCount });
+        const volunteer = await Volunteer.findById(req.user._id).populate('followedNGOs', '-password');
+        res.json(volunteer.followedNGOs);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -205,7 +198,7 @@ module.exports = {
     updateVolunteerProfile,
     getVerifiedNGOs,
     followNGO,
-    getUnreadMessageCount,
+    getFollowedNGOs,
     forgotPasswordVolunteer,
     resetPasswordVolunteer
 };

@@ -4,7 +4,6 @@ const { protect, authVolunteer } = require('../middleware/authMiddleware');
 const {
     registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs, getVerifiedNGOs,
     forgotPasswordVolunteer, resetPasswordVolunteer, getVolunteerProfile, updateVolunteerProfile
-
 } = require('../controllers/volunteerController');
 
 router.post('/register', registerVolunteer);
