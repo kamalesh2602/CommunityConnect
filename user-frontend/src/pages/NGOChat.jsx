@@ -43,6 +43,8 @@ const NGOChat = () => {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/messages/${user._id}/${volunteerId}`, config);
                 setMessages(data);
+                // Mark as read
+                await axios.put(`${import.meta.env.VITE_API_URL}/chat/mark-read/${volunteerId}`, {}, config);
             } catch (error) {
                 console.error(error);
             }

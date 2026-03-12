@@ -19,6 +19,7 @@ import NGODashboard from './pages/NGODashboard';
 import PostRequirement from './pages/PostRequirement';
 import NGOFollowers from './pages/NGOFollowers';
 import NGOChat from './pages/NGOChat';
+import EditProfile from './pages/EditProfile';
 
 const PrivateRoute = ({ allowedRole }) => {
   const { user, loading } = React.useContext(AuthContext);
@@ -71,6 +72,7 @@ const App = () => {
             <Route path="/volunteer/followed" element={<FollowedNGOs />} />
             <Route path="/volunteer/ngos/:id/requirements" element={<NGORequirements />} />
             <Route path="/volunteer/chat" element={<VolunteerChat />} />
+            <Route path="/volunteer/profile" element={<EditProfile />} />
           </Route>
 
           <Route element={<PrivateRoute allowedRole="ngo" />}>
@@ -78,6 +80,7 @@ const App = () => {
             <Route path="/ngo/requirements" element={<PostRequirement />} />
             <Route path="/ngo/followers" element={<NGOFollowers />} />
             <Route path="/ngo/chat" element={<NGOChat />} />
+            <Route path="/ngo/profile" element={<EditProfile />} />
           </Route>
         </Routes>
       </Router>

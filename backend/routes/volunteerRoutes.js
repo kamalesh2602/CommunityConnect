@@ -3,7 +3,8 @@ const router = express.Router();
 const { protect, authVolunteer } = require('../middleware/authMiddleware');
 const {
     registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs, getVerifiedNGOs,
-    forgotPasswordVolunteer, resetPasswordVolunteer
+    forgotPasswordVolunteer, resetPasswordVolunteer, getVolunteerProfile, updateVolunteerProfile
+
 } = require('../controllers/volunteerController');
 
 router.post('/register', registerVolunteer);
@@ -14,5 +15,6 @@ router.put('/reset-password/:resetToken', resetPasswordVolunteer);
 router.route('/ngos').get(protect, authVolunteer, getVerifiedNGOs);
 router.route('/follow').post(protect, authVolunteer, followNGO);
 router.route('/followed-ngos').get(protect, authVolunteer, getFollowedNGOs);
+router.route('/profile').get(protect, authVolunteer, getVolunteerProfile).put(protect, authVolunteer, updateVolunteerProfile);
 
 module.exports = router;

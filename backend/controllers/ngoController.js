@@ -64,6 +64,9 @@ const getNGOFollowers = async (req, res) => {
     }
 };
 
+
+module.exports = { registerNGO, loginNGO, getNGOFollowers };
+
 // Forgot Password
 const forgotPasswordNGO = async (req, res) => {
     try {
@@ -119,10 +122,60 @@ const resetPasswordNGO = async (req, res) => {
     }
 };
 
+// Get NGO Profile
+const getNGOProfile = async (req, res) => {
+    try {
+        const ngo = await NGO.findById(req.user._id).select('-password');
+        if (ngo) {
+            res.json(ngo);
+        } else {
+            res.status(404).json({ message: 'NGO not found' });
+        }
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// Update NGO Profile
+const updateNGOProfile = async (req, res) => {
+    try {
+        const ngo = await NGO.findById(req.user._id);
+
+        if (ngo) {
+            ngo.ngoName = req.body.ngoName || ngo.ngoName;
+            ngo.email = req.body.email || ngo.email;
+            ngo.phone = req.body.phone || ngo.phone;
+            ngo.registrationNumber = req.body.registrationNumber || ngo.registrationNumber;
+            ngo.panNumber = req.body.panNumber || ngo.panNumber;
+            ngo.address = req.body.address || ngo.address;
+
+            if (req.body.password) {
+                ngo.password = req.body.password;
+            }
+
+            const updatedNGO = await ngo.save();
+
+            res.json({
+                _id: updatedNGO._id,
+                ngoName: updatedNGO.ngoName,
+                email: updatedNGO.email,
+                role: 'ngo',
+                verified: updatedNGO.verified,
+                token: generateToken(updatedNGO._id, 'ngo')
+            });
+        } else {
+            res.status(404).json({ message: 'NGO not found' });
+        }
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
 module.exports = {
     registerNGO,
     loginNGO,
     getNGOFollowers,
     forgotPasswordNGO,
+    resetPasswordNGO,
+    getNGOProfile,
+    updateNGOProfile
+};
+
     resetPasswordNGO
 };

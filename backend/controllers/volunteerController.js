@@ -85,6 +85,7 @@ const getFollowedNGOs = async (req, res) => {
     }
 };
 
+module.exports = { registerVolunteer, loginVolunteer, followNGO, getFollowedNGOs };
 // Get Verified NGOs
 const getVerifiedNGOs = async (req, res) => {
     try {
@@ -150,6 +151,50 @@ const resetPasswordVolunteer = async (req, res) => {
     }
 };
 
+// Get Volunteer Profile
+const getVolunteerProfile = async (req, res) => {
+    try {
+        const volunteer = await Volunteer.findById(req.user._id).select('-password');
+        if (volunteer) {
+            res.json(volunteer);
+        } else {
+            res.status(404).json({ message: 'Volunteer not found' });
+        }
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
+// Update Volunteer Profile
+const updateVolunteerProfile = async (req, res) => {
+    try {
+        const volunteer = await Volunteer.findById(req.user._id);
+
+        if (volunteer) {
+            volunteer.name = req.body.name || volunteer.name;
+            volunteer.email = req.body.email || volunteer.email;
+            volunteer.phone = req.body.phone || volunteer.phone;
+            volunteer.aadhar = req.body.aadhar || volunteer.aadhar;
+
+            if (req.body.password) {
+                volunteer.password = req.body.password;
+            }
+
+            const updatedVolunteer = await volunteer.save();
+
+            res.json({
+                _id: updatedVolunteer._id,
+                name: updatedVolunteer.name,
+                email: updatedVolunteer.email,
+                phone: updatedVolunteer.phone,
+                aadhar: updatedVolunteer.aadhar,
+                role: 'volunteer',
+                token: generateToken(updatedVolunteer._id, 'volunteer')
+            });
+        } else {
+            res.status(404).json({ message: 'Volunteer not found' });
+        }
+    } catch (error) { res.status(500).json({ message: error.message }); }
+};
+
 module.exports = {
     registerVolunteer,
     loginVolunteer,
@@ -157,5 +202,9 @@ module.exports = {
     getFollowedNGOs,
     getVerifiedNGOs,
     forgotPasswordVolunteer,
+    resetPasswordVolunteer,
+    getVolunteerProfile,
+    updateVolunteerProfile
+};
     resetPasswordVolunteer
 };
