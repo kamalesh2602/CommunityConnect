@@ -14,6 +14,8 @@ import BrowseNGOs from './pages/BrowseNGOs';
 import FollowedNGOs from './pages/FollowedNGOs';
 import NGORequirements from './pages/NGORequirements';
 import VolunteerChat from './pages/VolunteerChat';
+import RequirementFeed from './pages/RequirementFeed';
+import RequirementDetails from './pages/RequirementDetails';
 
 import NGODashboard from './pages/NGODashboard';
 import PostRequirement from './pages/PostRequirement';
@@ -73,6 +75,8 @@ const App = () => {
             <Route path="/volunteer/ngos/:id/requirements" element={<NGORequirements />} />
             <Route path="/volunteer/chat" element={<VolunteerChat />} />
             <Route path="/volunteer/profile" element={<EditProfile />} />
+            <Route path="/requirements" element={<RequirementFeed />} />
+            <Route path="/requirement/:id" element={<RequirementDetails />} />
           </Route>
 
           <Route element={<PrivateRoute allowedRole="ngo" />}>
