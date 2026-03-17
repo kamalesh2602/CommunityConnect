@@ -8,6 +8,15 @@ const createDonation = async (req, res) => {
     try {
         const { ngoId, requirementId, amount, message } = req.body;
 
+        const requirement = await Requirement.findById(requirementId);
+        if (!requirement) {
+            return res.status(404).json({ message: 'Requirement not found' });
+        }
+
+        if (requirement.status === 'fulfilled') {
+            return res.status(400).json({ message: 'This requirement has already been fulfilled' });
+        }
+
         const donation = new Donation({
             volunteerId: req.user._id,
             ngoId,

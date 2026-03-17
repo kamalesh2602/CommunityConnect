@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, HeartHandshake, User, Settings, ChevronDown, MessageSquare } from 'lucide-react';
+import { LogOut, HeartHandshake, User, Settings, ChevronDown, MessageSquare, Bell } from 'lucide-react';
 import axios from 'axios';
+import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -53,6 +54,7 @@ const Navbar = () => {
                                 {user.role === 'volunteer' && (
                                     <>
                                         <NavLink to="/volunteer/dashboard" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Dashboard</NavLink>
+                                        <NavLink to="/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Requirements Feed</NavLink>
                                         <NavLink to="/volunteer/ngos" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Browse NGOs</NavLink>
                                         <NavLink to="/volunteer/followed" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Followed NGOs</NavLink>
                                     </>
@@ -66,7 +68,9 @@ const Navbar = () => {
                                 )}
                                 <div className="h-6 w-px bg-gray-200"></div>
                                 
-                                <div className="flex items-center gap-4">
+                                    {/* Notifications */}
+                                    {user.role === 'volunteer' && <NotificationBell />}
+
                                     {/* Chat Notification Icon */}
                                     <button 
                                         onClick={() => navigate(user.role === 'volunteer' ? '/volunteer/chat' : '/ngo/chat')}
@@ -118,17 +122,16 @@ const Navbar = () => {
                                             </div>
                                         )}
                                     </div>
+                                </>
+                            ) : (
+                                <div className="flex items-center gap-4">
+                                    <NavLink to="/login" className="text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors">Sign In</NavLink>
+                                    <NavLink to="/register" className="text-sm font-bold bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 shadow-sm hover:shadow-md transition-all active:scale-95">Get Started</NavLink>
                                 </div>
-                            </>
-                        ) : (
-                            <div className="flex items-center gap-4">
-                                <NavLink to="/login" className="text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors">Sign In</NavLink>
-                                <NavLink to="/register" className="text-sm font-bold bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 shadow-sm hover:shadow-md transition-all active:scale-95">Get Started</NavLink>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
             {/* Removed FloatingChatWidget as requested */}
         </nav>
     );
