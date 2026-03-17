@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { Heart, MessageCircle, Building2 } from 'lucide-react';
+import { Heart, MessageCircle, Building2, ChevronRight, LayoutGrid, Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const VolunteerDashboard = () => {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         followedNGOs: 0,
         donatedAmount: 0,
-        donationsCount: 0
+        donationsCount: 0,
+        unreadMessages: 0
     });
     const [donations, setDonations] = useState([]);
 
@@ -24,10 +27,14 @@ const VolunteerDashboard = () => {
                 // Fetch Followed NGOs
                 const { data: followedData } = await axios.get(`${import.meta.env.VITE_API_URL}/volunteer/followed-ngos`, config);
 
+                // Fetch Unread Messages
+                const { data: unreadData } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/unread-count`, config);
+
                 setStats({
                     followedNGOs: followedData.length,
                     donatedAmount: totalDonated,
-                    donationsCount: donationsData.length
+                    donationsCount: donationsData.length,
+                    unreadMessages: unreadData.unreadCount
                 });
 
             } catch (error) {
@@ -61,13 +68,45 @@ const VolunteerDashboard = () => {
                     </div>
                 </div>
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6">
-                    <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
-                        <MessageCircle size={28} />
+                    <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
+                        <Heart size={28} className="text-amber-500" />
                     </div>
                     <div>
                         <p className="text-gray-500 font-medium mb-1">Total Donations</p>
                         <h3 className="text-3xl font-black text-gray-800">{stats.donationsCount}</h3>
                     </div>
+                </div>
+            </div>            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <button 
+                    onClick={() => navigate('/requirements')}
+                    className="flex items-center justify-between p-6 bg-primary-600 text-white rounded-3xl shadow-lg shadow-primary-600/20 hover:-translate-y-1 transition-all group"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform">
+                            <LayoutGrid size={24} />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-sm font-bold opacity-80">Requirement Feed</p>
+                            <h3 className="text-xl font-black">NGO Needs</h3>
+                        </div>
+                    </div>
+                    <ChevronRight size={24} className="opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                </button>
+                <div 
+                    className="flex items-center justify-between p-6 bg-white border border-gray-100 rounded-3xl shadow-sm"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
+                            <Bell size={24} />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-sm font-bold text-gray-400">Updates</p>
+                            <h3 className="text-xl font-black text-gray-800">New Notifications</h3>
+                        </div>
+                    </div>
+                    <span className="bg-amber-100 text-amber-700 font-black px-4 py-1.5 rounded-full text-xs uppercase tracking-wider">
+                        Real-time
+                    </span>
                 </div>
             </div>
 

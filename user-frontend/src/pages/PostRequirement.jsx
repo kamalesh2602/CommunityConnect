@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { PlusCircle, FileText, IndianRupee } from 'lucide-react';
+import { PlusCircle, FileText, IndianRupee, CheckCircle } from 'lucide-react';
 
 const PostRequirement = () => {
     const { user } = useContext(AuthContext);
@@ -21,6 +21,18 @@ const PostRequirement = () => {
             setRequirements(data);
         } catch (error) {
             console.error(error);
+        }
+    };
+    
+    const handleStatusUpdate = async (id, status) => {
+        try {
+            const config = { headers: { Authorization: `Bearer ${user.token}` } };
+            await axios.patch(`${import.meta.env.VITE_API_URL}/requirements/${id}/status`, { status }, config);
+            fetchMyRequirements();
+            alert(`Requirement marked as ${status}`);
+        } catch (error) {
+            console.error(error);
+            alert('Failed to update status');
         }
     };
 
@@ -109,7 +121,6 @@ const PostRequirement = () => {
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-all font-bold text-gray-800"
                                     value={formData.deadline}
                                     onChange={handleChange}
-                                    required
                                 />
                             </div>
                         </div>
@@ -132,18 +143,31 @@ const PostRequirement = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {requirements.map((req) => (
                         <div key={req._id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col h-full">
+                            <div className="flex justify-between items-start mb-4">
+                                <h3 className="text-xl font-bold text-gray-900 leading-tight flex-1">{req.title}</h3>
+                                <div className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${req.status === 'open' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-600'}`}>
+                                    {req.status}
+                                </div>
+                            </div>
                             <div className="flex-1 mb-4">
-                                <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">{req.title}</h3>
                                 <p className="text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed">{req.description}</p>
                             </div>
-                            <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+                            <div className="flex items-center justify-between border-t border-gray-100 pt-4 mb-4">
                                 <div className="text-emerald-600 font-black flex items-center gap-1 text-lg">
                                     <IndianRupee size={18} /> {req.amountNeeded}
                                 </div>
                                 <div className="text-gray-500 text-sm font-bold bg-gray-100 px-3 py-1.5 rounded-lg">
-                                    Due: {new Date(req.deadline).toLocaleDateString()}
+                                    {req.deadline ? `Due: ${new Date(req.deadline).toLocaleDateString()}` : 'No deadline'}
                                 </div>
                             </div>
+                            {req.status === 'open' && (
+                                <button 
+                                    onClick={() => handleStatusUpdate(req._id, 'fulfilled')}
+                                    className="w-full py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-sm hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 border border-emerald-100"
+                                >
+                                    <CheckCircle size={16} /> Mark as Fulfilled
+                                </button>
+                            )}
                         </div>
                     ))}
                     {requirements.length === 0 && (

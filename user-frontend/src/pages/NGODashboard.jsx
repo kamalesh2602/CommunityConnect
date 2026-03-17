@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { FileText, IndianRupee, MessageCircle, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { FileText, IndianRupee, MessageCircle, AlertCircle, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const NGODashboard = () => {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         postedRequirements: 0,
         receivedDonations: 0,
-        totalAmount: 0
+        totalAmount: 0,
+        unreadMessages: 0
     });
     const [donations, setDonations] = useState([]);
 
@@ -24,10 +26,13 @@ const NGODashboard = () => {
                 setDonations(donData);
                 const totalDonated = donData.reduce((acc, curr) => acc + curr.amount, 0);
 
+                const { data: unreadData } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/unread-count`, config);
+
                 setStats({
                     postedRequirements: reqData.length,
                     receivedDonations: donData.length,
-                    totalAmount: totalDonated
+                    totalAmount: totalDonated,
+                    unreadMessages: unreadData.unreadCount
                 });
 
             } catch (error) {

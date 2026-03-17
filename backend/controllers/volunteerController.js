@@ -1,10 +1,10 @@
 const Volunteer = require('../models/Volunteer');
 const NGO = require('../models/NGO');
 const generateToken = require('../utils/generateToken');
-const sendEmail = require('../utils/sendemails');
 const crypto = require('crypto');
 
-// Register Volunteer
+// --- 1. AUTHENTICATION ---
+
 const registerVolunteer = async (req, res) => {
     try {
         const { name, email, aadhar, phone, password } = req.body;
@@ -18,27 +18,22 @@ const registerVolunteer = async (req, res) => {
             name, email, aadhar, phone, password
         });
 
-        if (volunteer) {
-            res.status(201).json({
-                _id: volunteer._id,
-                name: volunteer.name,
-                email: volunteer.email,
-                role: 'volunteer',
-                token: generateToken(volunteer._id, 'volunteer')
-            });
-        }
+        res.status(201).json({
+            _id: volunteer._id,
+            name: volunteer.name,
+            email: volunteer.email,
+            role: 'volunteer',
+            token: generateToken(volunteer._id, 'volunteer')
+        });
 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-
-// Login Volunteer
 const loginVolunteer = async (req, res) => {
     try {
         const { email, password } = req.body;
-
         const volunteer = await Volunteer.findOne({ email });
 
         if (volunteer && (await volunteer.matchPassword(password))) {
@@ -58,8 +53,65 @@ const loginVolunteer = async (req, res) => {
     }
 };
 
+// --- 2. PROFILE MANAGEMENT ---
 
-// Follow NGO
+const getVolunteerProfile = async (req, res) => {
+    try {
+        const volunteer = await Volunteer.findById(req.user._id).select('-password');
+        if (!volunteer) {
+            return res.status(404).json({ message: 'Volunteer not found' });
+        }
+        res.json(volunteer);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const updateVolunteerProfile = async (req, res) => {
+    try {
+        const volunteer = await Volunteer.findById(req.user._id);
+
+        if (!volunteer) {
+            return res.status(404).json({ message: 'Volunteer not found' });
+        }
+
+        volunteer.name = req.body.name || volunteer.name;
+        volunteer.email = req.body.email || volunteer.email;
+        volunteer.phone = req.body.phone || volunteer.phone;
+        volunteer.aadhar = req.body.aadhar || volunteer.aadhar;
+
+        if (req.body.password) {
+            volunteer.password = req.body.password;
+        }
+
+        const updatedVolunteer = await volunteer.save();
+
+        res.json({
+            _id: updatedVolunteer._id,
+            name: updatedVolunteer.name,
+            email: updatedVolunteer.email,
+            phone: updatedVolunteer.phone,
+            aadhar: updatedVolunteer.aadhar,
+            role: 'volunteer',
+            token: generateToken(updatedVolunteer._id, 'volunteer')
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// --- 3. NGO FEATURES ---
+
+const getVerifiedNGOs = async (req, res) => {
+    try {
+        const verifiedNGOs = await NGO.find({ verified: true }).select('-password');
+        res.json(verifiedNGOs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const followNGO = async (req, res) => {
     try {
         const { ngoId } = req.body;
@@ -70,7 +122,6 @@ const followNGO = async (req, res) => {
         if (!ngo) return res.status(404).json({ message: 'NGO not found' });
 
         if (!volunteer.followedNGOs.includes(ngoId)) {
-
             volunteer.followedNGOs.push(ngoId);
             await volunteer.save();
 
@@ -85,8 +136,6 @@ const followNGO = async (req, res) => {
     }
 };
 
-
-// Get Followed NGOs
 const getFollowedNGOs = async (req, res) => {
     try {
         const volunteer = await Volunteer
@@ -100,86 +149,36 @@ const getFollowedNGOs = async (req, res) => {
     }
 };
 
+// --- 4. PASSWORD RECOVERY (EMAIL BASED) ---
 
-// Get Verified NGOs
-const getVerifiedNGOs = async (req, res) => {
+const forgotPasswordVolunteer = async (req, res) => {
     try {
+        const { email } = req.body;
 
-        const verifiedNGOs = await NGO
-            .find({ verified: true })
-            .select('-password');
+        const volunteer = await Volunteer.findOne({ email });
 
-        res.json(verifiedNGOs);
+        if (!volunteer) {
+            return res.status(404).json({ message: 'Volunteer not found' });
+        }
+
+        const resetToken = volunteer.getResetPasswordToken();
+        await volunteer.save({ validateBeforeSave: false });
+
+        const resetUrl = `http://localhost:5173/reset-password/${resetToken}?role=volunteer`;
+
+        console.log("RESET LINK:", resetUrl);
+
+        res.json({
+            message: "Reset link generated (check backend console)"
+        });
 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-
-
-// Forgot Password
-const forgotPasswordVolunteer = async (req, res) => {
-
-    try {
-
-        const { email } = req.body;
-
-        const volunteer = await Volunteer.findOne({ email });
-
-        if (!volunteer) {
-            return res.status(404).json({
-                message: 'Volunteer not found with this email'
-            });
-        }
-
-        // generate reset token
-        const resetToken = volunteer.getResetPasswordToken();
-
-        await volunteer.save({ validateBeforeSave: false });
-
-        // reset link
-        const resetUrl =
-            `http://localhost:5173/reset-password/${resetToken}?role=volunteer`;
-
-        const message = `
-You requested a password reset.
-
-Click the link below to reset your password:
-
-${resetUrl}
-
-If you did not request this, please ignore this email.
-`;
-
-        // send email
-        await sendEmail(
-            volunteer.email,
-            "Volunteer Password Reset",
-            message
-        );
-
-        res.json({
-            message: "Password reset link sent to your email"
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        res.status(500).json({
-            message: "Error sending email"
-        });
-    }
-};
-
-
-
-// Reset Password
 const resetPasswordVolunteer = async (req, res) => {
-
     try {
-
         const resetPasswordToken = crypto
             .createHash('sha256')
             .update(req.params.resetToken)
@@ -191,37 +190,32 @@ const resetPasswordVolunteer = async (req, res) => {
         });
 
         if (!volunteer) {
-            return res.status(400).json({
-                message: 'Invalid or expired reset token'
-            });
+            return res.status(400).json({ message: 'Invalid or expired token' });
         }
 
         volunteer.password = req.body.password;
-
         volunteer.resetPasswordToken = undefined;
         volunteer.resetPasswordExpire = undefined;
 
         await volunteer.save();
 
-        res.json({
-            message: 'Password reset successful'
-        });
+        res.json({ message: 'Password reset successful' });
 
     } catch (error) {
-
-        res.status(500).json({
-            message: error.message
-        });
+        res.status(500).json({ message: error.message });
     }
 };
 
+// --- EXPORTS ---
 
 module.exports = {
     registerVolunteer,
     loginVolunteer,
+    getVolunteerProfile,
+    updateVolunteerProfile,
+    getVerifiedNGOs,
     followNGO,
     getFollowedNGOs,
-    getVerifiedNGOs,
     forgotPasswordVolunteer,
     resetPasswordVolunteer
 };
