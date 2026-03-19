@@ -32,17 +32,55 @@ const RequirementDetails = () => {
 
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            await axios.post(`${import.meta.env.VITE_API_URL}/donations`, {
-                ngoId: requirement.ngoId._id,
-                requirementId: requirement._id,
-                amount: Number(amount),
-                message: `Donation for ${requirement.title}`
+            
+            // 1. Create order at backend
+            const { data: order } = await axios.post(`${import.meta.env.VITE_API_URL}/payment/create-order`, {
+                amount: Number(amount)
             }, config);
-            alert('Thank you for your donation!');
-            setAmount('');
+
+            // 2. Setup Razorpay options
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: "Community Connect",
+                description: `Donation for ${requirement.title}`,
+                order_id: order.id,
+                handler: async (response) => {
+                    // 3. Payment success - record donation in db
+                    try {
+                        await axios.post(`${import.meta.env.VITE_API_URL}/donations`, {
+                            ngoId: requirement.ngoId._id,
+                            requirementId: requirement._id,
+                            amount: Number(amount),
+                            message: `Donation for ${requirement.title} (Payment ID: ${response.razorpay_payment_id})`
+                        }, config);
+
+                        alert('Thank you for your donation!');
+                        setAmount('');
+                        // refresh data
+                        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/requirements/${id}`);
+                        setRequirement(data);
+                    } catch (dbError) {
+                        console.error('Recording donation failed:', dbError);
+                        alert('Payment was successful, but failed to record donation. Please contact support.');
+                    }
+                },
+                prefill: {
+                    name: user.name,
+                    email: user.email,
+                },
+                theme: {
+                    color: "#2563eb"
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+
         } catch (error) {
-            console.error('Donation failed:', error);
-            alert(error.response?.data?.message || 'Donation failed');
+            console.error('Donation flow failed:', error);
+            alert(error.response?.data?.message || 'Payment initiation failed');
         }
     };
 

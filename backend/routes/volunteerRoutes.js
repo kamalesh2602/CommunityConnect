@@ -11,6 +11,7 @@ router.post('/login', loginVolunteer);
 router.post('/forgot-password', forgotPasswordVolunteer);
 router.put('/reset-password/:resetToken', resetPasswordVolunteer);
 
+
 router.route('/ngos').get(protect, authVolunteer, getVerifiedNGOs);
 router.route('/follow').post(protect, authVolunteer, followNGO);
 router.route('/followed-ngos').get(protect, authVolunteer, getFollowedNGOs);

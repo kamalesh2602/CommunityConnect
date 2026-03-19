@@ -1,13 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LogIn } from 'lucide-react';
+import { LogIn, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
     const [role, setRole] = useState('volunteer');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const { login, user } = useContext(AuthContext);
@@ -81,16 +82,25 @@ const Login = () => {
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1.5">Password</label>
-                            <input
-                                type="password"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium text-gray-800 bg-gray-50 focus:bg-white placeholder-gray-400"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium text-gray-800 bg-gray-50 focus:bg-white placeholder-gray-400 pr-12"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                            </div>
                             <div className="flex justify-end mt-1">
-                                <Link to={`/forgot-password?role=${role}`} className="text-xs font-bold text-blue-600 hover:text-blue-800">
+                                <Link to={`/forgot-password?role=${role}${email ? `&email=${email}` : ''}`} className="text-xs font-bold text-blue-600 hover:text-blue-800">
                                     Forgot password?
                                 </Link>
                             </div>
