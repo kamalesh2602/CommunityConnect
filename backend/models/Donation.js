@@ -6,7 +6,6 @@ const donationSchema = new mongoose.Schema({
     requirementId: { type: mongoose.Schema.Types.ObjectId, ref: 'Requirement', required: true },
     amount: { type: Number, required: true },
     message: { type: String },
-    paymentId: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Donation', donationSchema);

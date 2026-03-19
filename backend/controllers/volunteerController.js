@@ -2,6 +2,7 @@ const Volunteer = require('../models/Volunteer');
 const NGO = require('../models/NGO');
 const generateToken = require('../utils/generateToken');
 const crypto = require('crypto');
+const sendEmail = require('../utils/sendemails');
 
 // --- 1. AUTHENTICATION ---
 
@@ -165,13 +166,29 @@ const forgotPasswordVolunteer = async (req, res) => {
         await volunteer.save({ validateBeforeSave: false });
 
         const resetUrl = `http://localhost:5173/reset-password/${resetToken}?role=volunteer`;
+        const message = `
+You requested a password reset.
 
-        console.log("RESET LINK:", resetUrl);
+Click the link below to reset your password:
 
-        res.json({
-            message: "Reset link generated (check backend console)"
-        });
+${resetUrl}
 
+If you did not request this, please ignore this email.
+`;
+
+        try {
+            await sendEmail(
+                volunteer.email,
+                "Volunteer Password Reset",
+                message
+            );
+            res.json({
+                message: "Password reset link sent to your email"
+            });
+        } catch (emailError) {
+            console.error("EMAIL ERROR:", emailError);
+            res.status(500).json({ message: "Error sending email" });
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
