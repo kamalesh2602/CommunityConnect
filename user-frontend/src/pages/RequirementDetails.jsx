@@ -32,17 +32,53 @@ const RequirementDetails = () => {
 
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            await axios.post(`${import.meta.env.VITE_API_URL}/donations`, {
-                ngoId: requirement.ngoId._id,
-                requirementId: requirement._id,
-                amount: Number(amount),
-                message: `Donation for ${requirement.title}`
+            
+            // 1. Create order on backend
+            const { data: order } = await axios.post(`${import.meta.env.VITE_API_URL}/payment/create-order`, {
+                amount: Number(amount)
             }, config);
-            alert('Thank you for your donation!');
-            setAmount('');
+
+            // 2. Options for Razorpay
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: "CommunityConnect",
+                description: `Donation for ${requirement.title}`,
+                order_id: order.id,
+                handler: async (response) => {
+                    // 3. On successful payment, record the donation
+                    try {
+                        await axios.post(`${import.meta.env.VITE_API_URL}/donations`, {
+                            ngoId: requirement.ngoId._id,
+                            requirementId: requirement._id,
+                            amount: Number(amount),
+                            message: `Donation for ${requirement.title}`,
+                            paymentId: response.razorpay_payment_id
+                        }, config);
+                        
+                        alert('Thank you for your donation!');
+                        setAmount('');
+                    } catch (err) {
+                        console.error('Recording donation failed:', err);
+                        alert('Payment was successful, but we failed to record your donation. Please contact support.');
+                    }
+                },
+                prefill: {
+                    name: user.name,
+                    email: user.email,
+                },
+                theme: {
+                    color: "#059669",
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+
         } catch (error) {
-            console.error('Donation failed:', error);
-            alert(error.response?.data?.message || 'Donation failed');
+            console.error('Payment initiation failed:', error);
+            alert(error.response?.data?.message || 'Payment initiation failed');
         }
     };
 
