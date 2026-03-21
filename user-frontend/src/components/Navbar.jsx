@@ -54,26 +54,26 @@ const Navbar = () => {
                                 {user.role === 'volunteer' && (
                                     <>
                                         <NavLink to="/volunteer/dashboard" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Dashboard</NavLink>
-                                        <NavLink to="/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Requirements Feed</NavLink>
-                                        <NavLink to="/volunteer/ngos" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Browse NGOs</NavLink>
-                                        <NavLink to="/volunteer/followed" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Followed NGOs</NavLink>
+                                        <NavLink to="/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Requirements</NavLink>
+                                        <NavLink to="/volunteer/ngos" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Organizations</NavLink>
+                                        <NavLink to="/volunteer/activity" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Activity</NavLink>
                                     </>
                                 )}
                                 {user.role === 'ngo' && (
                                     <>
                                         <NavLink to="/ngo/dashboard" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600' : 'text-gray-500 hover:text-gray-900'}`}>Dashboard</NavLink>
-                                        <NavLink to="/ngo/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600' : 'text-gray-500 hover:text-gray-900'}`}>Post Requirement</NavLink>
+                                        <NavLink to="/ngo/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600' : 'text-gray-500 hover:text-gray-900'}`}>Requirements</NavLink>
                                         <NavLink to="/ngo/followers" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600' : 'text-gray-500 hover:text-gray-900'}`}>Followers</NavLink>
                                     </>
                                 )}
                                 <div className="h-6 w-px bg-gray-200"></div>
                                 
                                     {/* Notifications */}
-                                    {user.role === 'volunteer' && <NotificationBell />}
-
+                                    <NotificationBell />
+ 
                                     {/* Chat Notification Icon */}
                                     <button 
-                                        onClick={() => navigate(user.role === 'volunteer' ? '/volunteer/chat' : '/ngo/chat')}
+                                        onClick={() => navigate('/chat')}
                                         className="relative p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all"
                                     >
                                         <MessageSquare size={22} />

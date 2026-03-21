@@ -13,14 +13,14 @@ import VolunteerDashboard from './pages/VolunteerDashboard';
 import BrowseNGOs from './pages/BrowseNGOs';
 import FollowedNGOs from './pages/FollowedNGOs';
 import NGORequirements from './pages/NGORequirements';
-import VolunteerChat from './pages/VolunteerChat';
+import Chat from './pages/Chat';
+import VolunteerActivity from './pages/VolunteerActivity';
 import RequirementFeed from './pages/RequirementFeed';
 import RequirementDetails from './pages/RequirementDetails';
 
 import NGODashboard from './pages/NGODashboard';
 import PostRequirement from './pages/PostRequirement';
 import NGOFollowers from './pages/NGOFollowers';
-import NGOChat from './pages/NGOChat';
 import EditProfile from './pages/EditProfile';
 
 const PrivateRoute = ({ allowedRole }) => {
@@ -68,13 +68,18 @@ const App = () => {
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Route>
 
+          <Route element={<PrivateRoute />}>
+             <Route path="/chat/:id" element={<Chat />} />
+             <Route path="/chat" element={<Chat />} />
+          </Route>
+
           <Route element={<PrivateRoute allowedRole="volunteer" />}>
             <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
             <Route path="/volunteer/ngos" element={<BrowseNGOs />} />
             <Route path="/volunteer/followed" element={<FollowedNGOs />} />
             <Route path="/volunteer/ngos/:id/requirements" element={<NGORequirements />} />
-            <Route path="/volunteer/chat" element={<VolunteerChat />} />
             <Route path="/volunteer/profile" element={<EditProfile />} />
+            <Route path="/volunteer/activity" element={<VolunteerActivity />} />
             <Route path="/requirements" element={<RequirementFeed />} />
             <Route path="/requirement/:id" element={<RequirementDetails />} />
           </Route>
@@ -83,7 +88,6 @@ const App = () => {
             <Route path="/ngo/dashboard" element={<NGODashboard />} />
             <Route path="/ngo/requirements" element={<PostRequirement />} />
             <Route path="/ngo/followers" element={<NGOFollowers />} />
-            <Route path="/ngo/chat" element={<NGOChat />} />
             <Route path="/ngo/profile" element={<EditProfile />} />
           </Route>
         </Routes>

@@ -43,7 +43,7 @@ const BrowseNGOs = () => {
 
     return (
         <div className="py-8">
-            <h1 className="text-3xl font-black text-gray-900 mb-8 tracking-tight">Discover NGOs</h1>
+            <h1 className="text-3xl font-black text-gray-900 mb-8 tracking-tight">Organizations</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {ngos.map(ngo => (
                     <div key={ngo._id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -63,7 +63,7 @@ const BrowseNGOs = () => {
                                 onClick={() => setSelectedNgo(ngo)}
                                 className="w-full py-2.5 bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold rounded-xl transition-colors border border-primary-100"
                             >
-                                View Full Profile
+                                View NGO
                             </button>
                             <button
                                 onClick={() => navigate(`/volunteer/ngos/${ngo._id}/requirements`)}
@@ -131,10 +131,10 @@ const BrowseNGOs = () => {
 
                             <div className="flex gap-4 pt-4">
                                 <button 
-                                    onClick={() => navigate('/volunteer/chat', { state: { directNgoId: selectedNgo._id } })}
+                                    onClick={() => navigate(`/chat/${selectedNgo._id}`, { state: { name: selectedNgo.ngoName } })}
                                     className="flex-1 bg-primary-600 text-white font-bold py-3 rounded-xl hover:bg-primary-700 transition-all shadow-lg shadow-primary-200"
                                 >
-                                    Message NGO
+                                    Chat
                                 </button>
                                 <button 
                                     onClick={() => setSelectedNgo(null)}

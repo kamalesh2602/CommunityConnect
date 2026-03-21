@@ -86,7 +86,7 @@ const RequirementDetails = () => {
 
     const handleChat = () => {
         if (!user) return navigate('/login');
-        navigate('/volunteer/chat', { state: { ngoId: requirement.ngoId._id, ngoName: requirement.ngoId.ngoName } });
+        navigate(`/chat/${requirement.ngoId._id}`, { state: { name: requirement.ngoId.ngoName } });
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-bold text-gray-400">Loading details...</div>;

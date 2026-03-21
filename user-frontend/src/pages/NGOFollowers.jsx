@@ -52,10 +52,10 @@ const NGOFollowers = () => {
                                             <User size={18} /> View Profile
                                         </button>
                                         <button
-                                            onClick={() => navigate('/ngo/chat', { state: { volunteerId: volunteer._id, volunteerName: volunteer.name } })}
+                                            onClick={() => navigate(`/chat/${volunteer._id}`, { state: { name: volunteer.name } })}
                                             className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-4 py-2 rounded-xl font-bold transition-colors"
                                         >
-                                            <MessageCircle size={18} /> Direct Message
+                                            <MessageCircle size={18} /> Chat
                                         </button>
                                     </td>
                                 </tr>
@@ -123,12 +123,12 @@ const NGOFollowers = () => {
                             <div className="flex gap-4">
                                 <button 
                                     onClick={() => {
-                                        navigate('/ngo/chat', { state: { volunteerId: selectedVolunteer._id, volunteerName: selectedVolunteer.name } });
+                                        navigate(`/chat/${selectedVolunteer._id}`, { state: { name: selectedVolunteer.name } });
                                         setSelectedVolunteer(null);
                                     }}
                                     className="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2"
                                 >
-                                    <MessageCircle size={20} /> Message Volunteer
+                                    <MessageCircle size={20} /> Chat
                                 </button>
                                 <button 
                                     onClick={() => setSelectedVolunteer(null)}

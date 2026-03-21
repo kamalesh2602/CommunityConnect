@@ -101,10 +101,10 @@ const NGORequirements = () => {
                     <p className="text-gray-500 font-medium">Support the causes that matter to you</p>
                 </div>
                 <button
-                    onClick={() => navigate('/volunteer/chat', { state: { ngoId: id, ngoName } })}
+                    onClick={() => navigate(`/chat/${id}`, { state: { name: ngoName } })}
                     className="flex items-center gap-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm"
                 >
-                    <MessageCircle size={20} /> Chat with NGO
+                    <MessageCircle size={20} /> Chat
                 </button>
             </div>
 

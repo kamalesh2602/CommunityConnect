@@ -63,34 +63,38 @@ const NGODashboard = () => {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <Link to="/ngo/requirements" className="bg-white hover:bg-gray-50 rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6 transition-all group">
-                    <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <FileText size={28} />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4">
+                        <FileText size={24} />
                     </div>
-                    <div>
-                        <p className="text-gray-500 font-medium mb-1">Active Requirements</p>
-                        <h3 className="text-3xl font-black text-gray-800">{stats.postedRequirements}</h3>
-                    </div>
-                </Link>
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6">
-                    <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
-                        <IndianRupee size={28} />
-                    </div>
-                    <div>
-                        <p className="text-gray-500 font-medium mb-1">Total Funds Raised</p>
-                        <h3 className="text-3xl font-black text-gray-800">₹{stats.totalAmount}</h3>
-                    </div>
+                    <p className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-1">Active Needs</p>
+                    <h3 className="text-3xl font-black text-gray-800">{stats.postedRequirements}</h3>
                 </div>
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-6">
-                    <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
-                        <MessageCircle size={28} />
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4">
+                        <IndianRupee size={24} />
                     </div>
-                    <div>
-                        <p className="text-gray-500 font-medium mb-1">Donations Received</p>
-                        <h3 className="text-3xl font-black text-gray-800">{stats.receivedDonations}</h3>
-                    </div>
+                    <p className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-1">Total Raised</p>
+                    <h3 className="text-3xl font-black text-gray-800">₹{stats.totalAmount.toLocaleString()}</h3>
                 </div>
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                    <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4">
+                        <MessageCircle size={24} />
+                    </div>
+                    <p className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-1">Donations</p>
+                    <h3 className="text-3xl font-black text-gray-800">{stats.receivedDonations}</h3>
+                </div>
+                <button 
+                    onClick={() => navigate('/ngo/requirements')}
+                    className="bg-secondary-600 text-white rounded-3xl p-6 shadow-lg shadow-secondary-600/20 hover:-translate-y-1 transition-all group text-left"
+                >
+                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <ChevronRight size={24} />
+                    </div>
+                    <p className="text-white/70 font-bold text-xs uppercase tracking-widest mb-1">Management</p>
+                    <h3 className="text-2xl font-black flex items-center gap-2">Requirements</h3>
+                </button>
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
