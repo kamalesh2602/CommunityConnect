@@ -22,7 +22,16 @@ const Register = () => {
     }, [user, navigate]);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        
+        if (name === 'phone' || name === 'aadhar') {
+            const numericValue = value.replace(/\D/g, '');
+            if (name === 'phone' && numericValue.length > 10) return;
+            if (name === 'aadhar' && numericValue.length > 12) return;
+            setFormData({ ...formData, [name]: numericValue });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const handleSubmit = async (e) => {
