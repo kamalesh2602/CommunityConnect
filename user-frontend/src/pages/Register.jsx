@@ -3,22 +3,23 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { CheckCircle, UserPlus, XCircle } from 'lucide-react';
 
-const stateDistrictOptions = {
-    'Tamil Nadu': ['CHENNAI', 'KRISHNAGIRI'],
-    Maharashtra: ['MUMBAI'],
-    Karnataka: ['BENGALURU']
-};
-
 const sectorOptions = ['Education', 'Healthcare', 'Environment', 'Women Empowerment'];
 const ngoTypeOptions = ['Section 8 Company', 'Trust', 'Society'];
+
+const getLocationDataUrl = () => {
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const backendOrigin = apiUrl.replace(/\/api\/?$/, '');
+    return `${backendOrigin}/data/indiaStatesDistricts.json`;
+};
 
 const Register = () => {
     const [role, setRole] = useState('volunteer');
     const [formData, setFormData] = useState({
         name: '', ngoName: '', email: '', aadhar: '', phone: '', password: '',
-        address: '', darpanId: '', state: 'Tamil Nadu', district: 'KRISHNAGIRI',
+        address: '', darpanId: '', state: '', district: '',
         sector: 'Education', ngoType: 'Section 8 Company'
     });
+    const [stateDistrictOptions, setStateDistrictOptions] = useState({});
     const [error, setError] = useState('');
     const [verificationStatus, setVerificationStatus] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,18 @@ const Register = () => {
         }
     }, [user, navigate, verificationStatus]);
 
+    useEffect(() => {
+        fetch(getLocationDataUrl())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Unable to load state and district options');
+                }
+                return response.json();
+            })
+            .then((locations) => setStateDistrictOptions(locations))
+            .catch(() => setError('Unable to load state and district options. Please refresh and try again.'));
+    }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         
@@ -44,7 +57,7 @@ const Register = () => {
             setFormData({
                 ...formData,
                 state: value,
-                district: stateDistrictOptions[value]?.[0] || ''
+                district: ''
             });
         } else {
             setFormData({ ...formData, [name]: value });
@@ -195,12 +208,14 @@ const Register = () => {
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1.5">State</label>
                                             <select name="state" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.state} required>
+                                                <option value="">Select State</option>
                                                 {Object.keys(stateDistrictOptions).map(state => <option key={state} value={state}>{state}</option>)}
                                             </select>
                                         </div>
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1.5">District</label>
-                                            <select name="district" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.district} required>
+                                            <select name="district" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed" onChange={handleChange} value={formData.district} required disabled={!formData.state}>
+                                                <option value="">{formData.state ? 'Select District' : 'Select state first'}</option>
                                                 {(stateDistrictOptions[formData.state] || []).map(district => <option key={district} value={district}>{district}</option>)}
                                             </select>
                                         </div>

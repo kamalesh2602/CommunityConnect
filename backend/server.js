@@ -23,6 +23,7 @@ const app = express();
 // middlewares
 app.use(cors());
 app.use(express.json());
+app.use('/data', express.static(path.join(__dirname, '..', 'data')));
 app.use('/mock-registry', express.static(path.join(__dirname, 'mock-registry')));
 
 // request logger
