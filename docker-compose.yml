@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build: ./backend
+    container_name: community-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  admin-frontend:
+    build: ./admin-frontend
+    container_name: admin-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./admin-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  user-frontend:
+    build: ./user-frontend
+    container_name: user-frontend
+    ports:
+      - "5174:5173"
+    volumes:
+      - ./user-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo
+    container_name: community-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
