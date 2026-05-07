@@ -1,12 +1,16 @@
 const DATA_URL = '/mock-registry/data/ngos.json';
+const LOCATION_DATA_URL = '/data/indiaStatesDistricts.json';
 
-const fields = ['state', 'district', 'sector', 'ngoType'];
+const fields = ['sector', 'ngoType'];
 const form = document.querySelector('#searchForm');
 const resetButton = document.querySelector('#resetButton');
 const results = document.querySelector('#results');
 const resultCount = document.querySelector('#resultCount');
+const stateSelect = document.querySelector('#state');
+const districtSelect = document.querySelector('#district');
 
 let registry = [];
+let stateDistrictOptions = {};
 window.registryReady = false;
 
 const normalize = (value) => String(value || '').trim().toLowerCase();
@@ -25,6 +29,31 @@ const fillSelect = (field) => {
         option.value = value;
         option.textContent = value;
         select.appendChild(option);
+    });
+};
+
+const fillStateSelect = () => {
+    stateSelect.innerHTML = '<option value="">All States</option>';
+
+    Object.keys(stateDistrictOptions).forEach((state) => {
+        const option = document.createElement('option');
+        option.value = state;
+        option.textContent = state;
+        stateSelect.appendChild(option);
+    });
+};
+
+const fillDistrictSelect = (state) => {
+    districtSelect.innerHTML = '<option value="">All Districts</option>';
+    districtSelect.disabled = !state;
+
+    if (!state) return;
+
+    (stateDistrictOptions[state] || []).forEach((district) => {
+        const option = document.createElement('option');
+        option.value = district;
+        option.textContent = district;
+        districtSelect.appendChild(option);
     });
 };
 
@@ -88,20 +117,32 @@ form.addEventListener('submit', (event) => {
     runSearch();
 });
 
+stateSelect.addEventListener('change', () => {
+    fillDistrictSelect(stateSelect.value);
+    districtSelect.value = '';
+});
+
 resetButton.addEventListener('click', () => {
     form.reset();
+    fillDistrictSelect('');
     renderResults(registry);
 });
 
-fetch(DATA_URL)
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error('Unable to load registry data');
-        }
+Promise.all([
+    fetch(DATA_URL).then((response) => {
+        if (!response.ok) throw new Error('Unable to load registry data');
+        return response.json();
+    }),
+    fetch(LOCATION_DATA_URL).then((response) => {
+        if (!response.ok) throw new Error('Unable to load location data');
         return response.json();
     })
-    .then((items) => {
+])
+    .then(([items, locations]) => {
         registry = items;
+        stateDistrictOptions = locations;
+        fillStateSelect();
+        fillDistrictSelect('');
         fields.forEach(fillSelect);
         renderResults(registry);
         window.registryReady = true;
