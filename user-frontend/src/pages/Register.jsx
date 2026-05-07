@@ -1,25 +1,36 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { UserPlus } from 'lucide-react';
+import { CheckCircle, UserPlus, XCircle } from 'lucide-react';
+
+const stateDistrictOptions = {
+    'Tamil Nadu': ['CHENNAI', 'KRISHNAGIRI'],
+    Maharashtra: ['MUMBAI'],
+    Karnataka: ['BENGALURU']
+};
+
+const sectorOptions = ['Education', 'Healthcare', 'Environment', 'Women Empowerment'];
+const ngoTypeOptions = ['Section 8 Company', 'Trust', 'Society'];
 
 const Register = () => {
     const [role, setRole] = useState('volunteer');
     const [formData, setFormData] = useState({
         name: '', ngoName: '', email: '', aadhar: '', phone: '', password: '',
-        registrationNumber: '', panNumber: '', address: ''
+        address: '', darpanId: '', state: 'Tamil Nadu', district: 'KRISHNAGIRI',
+        sector: 'Education', ngoType: 'Section 8 Company'
     });
     const [error, setError] = useState('');
+    const [verificationStatus, setVerificationStatus] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const { register, user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user) {
+        if (user && !verificationStatus) {
             navigate(user.role === 'volunteer' ? '/volunteer/dashboard' : '/ngo/dashboard');
         }
-    }, [user, navigate]);
+    }, [user, navigate, verificationStatus]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,6 +40,12 @@ const Register = () => {
             if (name === 'phone' && numericValue.length > 10) return;
             if (name === 'aadhar' && numericValue.length > 12) return;
             setFormData({ ...formData, [name]: numericValue });
+        } else if (name === 'state') {
+            setFormData({
+                ...formData,
+                state: value,
+                district: stateDistrictOptions[value]?.[0] || ''
+            });
         } else {
             setFormData({ ...formData, [name]: value });
         }
@@ -37,16 +54,36 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setVerificationStatus(null);
         setIsLoading(true);
 
         const dataToSend = role === 'volunteer'
             ? { name: formData.name, email: formData.email, aadhar: formData.aadhar, phone: formData.phone, password: formData.password }
-            : { ngoName: formData.ngoName, email: formData.email, registrationNumber: formData.registrationNumber, panNumber: formData.panNumber, address: formData.address, phone: formData.phone, password: formData.password };
+            : {
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone,
+                address: formData.address,
+                ngoName: formData.ngoName,
+                darpanId: formData.darpanId,
+                state: formData.state,
+                district: formData.district,
+                sector: formData.sector,
+                ngoType: formData.ngoType
+            };
 
         const res = await register(role, dataToSend);
         setIsLoading(false);
         if (res.success) {
-            navigate(role === 'volunteer' ? '/volunteer/dashboard' : '/ngo/dashboard');
+            if (role === 'ngo') {
+                setVerificationStatus({
+                    verified: res.data.verified,
+                    message: res.data.verificationMessage || (res.data.verified ? 'NGO Verified Successfully' : 'Verification Failed')
+                });
+                setTimeout(() => navigate('/ngo/dashboard'), 1400);
+            } else {
+                navigate('/volunteer/dashboard');
+            }
         } else {
             setError(res.message);
         }
@@ -67,6 +104,13 @@ const Register = () => {
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-sm text-sm font-medium">
                             {error}
+                        </div>
+                    )}
+
+                    {verificationStatus && (
+                        <div className={`mb-6 p-4 border-l-4 rounded shadow-sm text-sm font-bold flex items-center gap-2 ${verificationStatus.verified ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-amber-50 border-amber-500 text-amber-700'}`}>
+                            {verificationStatus.verified ? <CheckCircle size={18} /> : <XCircle size={18} />}
+                            {verificationStatus.message}
                         </div>
                     )}
 
@@ -109,41 +153,80 @@ const Register = () => {
 
                         {role === 'ngo' && (
                             <>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1.5">NGO Name</label>
-                                    <input type="text" name="ngoName" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.ngoName} required />
+                                <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-5 space-y-5">
+                                    <h3 className="text-lg font-black text-gray-900">Login & Contact Information</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">Email Address</label>
+                                            <input type="email" name="email" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.email} required placeholder="you@example.com" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">Password</label>
+                                            <input type="password" name="password" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.password} required placeholder="Password" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">Phone Number</label>
+                                            <input type="text" name="phone" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.phone} required />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">Full Address</label>
+                                            <input type="text" name="address" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.address} required />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Registration Number</label>
-                                        <input type="text" name="registrationNumber" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.registrationNumber} required />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">PAN Number</label>
-                                        <input type="text" name="panNumber" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.panNumber} required />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Phone Number</label>
-                                        <input type="text" name="phone" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.phone} required />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Full Address</label>
-                                        <input type="text" name="address" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.address} required />
+
+                                <div className="rounded-2xl border border-gray-100 bg-blue-50/40 p-5 space-y-5">
+                                    <h3 className="text-lg font-black text-gray-900">NGO Verification Information</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">NGO Name</label>
+                                            <input type="text" name="ngoName" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.ngoName} required />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">NGO Darpan ID</label>
+                                            <input type="text" name="darpanId" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.darpanId} required />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">Sector</label>
+                                            <select name="sector" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.sector} required>
+                                                {sectorOptions.map(sector => <option key={sector} value={sector}>{sector}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">State</label>
+                                            <select name="state" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.state} required>
+                                                {Object.keys(stateDistrictOptions).map(state => <option key={state} value={state}>{state}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">District</label>
+                                            <select name="district" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.district} required>
+                                                {(stateDistrictOptions[formData.state] || []).map(district => <option key={district} value={district}>{district}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">NGO Type</label>
+                                            <select name="ngoType" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.ngoType} required>
+                                                {ngoTypeOptions.map(type => <option key={type} value={type}>{type}</option>)}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </>
                         )}
 
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1.5">Email Address</label>
-                            <input type="email" name="email" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.email} required placeholder="you@example.com" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1.5">Password</label>
-                            <input type="password" name="password" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.password} required placeholder="••••••••" />
-                        </div>
+                        {role === 'volunteer' && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1.5">Email Address</label>
+                                    <input type="email" name="email" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.email} required placeholder="you@example.com" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1.5">Password</label>
+                                    <input type="password" name="password" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.password} required placeholder="Password" />
+                                </div>
+                            </>
+                        )}
 
                         <button
                             type="submit"

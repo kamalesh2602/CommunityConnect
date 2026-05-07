@@ -17,8 +17,11 @@ const EditProfile = () => {
         email: '',
         phone: '',
         address: '',
-        registrationNumber: '',
-        panNumber: '',
+        darpanId: '',
+        state: '',
+        district: '',
+        sector: '',
+        ngoType: '',
         aadhar: '',
         password: '',
         confirmPassword: ''
@@ -184,12 +187,48 @@ const EditProfile = () => {
                         ) : (
                             <>
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-gray-700 ml-1">Registration No.</label>
+                                    <label className="text-sm font-semibold text-gray-700 ml-1">NGO Darpan ID</label>
                                     <div className="relative opacity-50">
                                         <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                         <input
                                             type="text"
-                                            value={formData.registrationNumber}
+                                            value={formData.darpanId}
+                                            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-gray-700 ml-1">Sector</label>
+                                    <div className="relative opacity-50">
+                                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        <input
+                                            type="text"
+                                            value={formData.sector}
+                                            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-gray-700 ml-1">District</label>
+                                    <div className="relative opacity-50">
+                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        <input
+                                            type="text"
+                                            value={formData.district}
+                                            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-gray-700 ml-1">NGO Type</label>
+                                    <div className="relative opacity-50">
+                                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        <input
+                                            type="text"
+                                            value={formData.ngoType}
                                             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none"
                                             disabled
                                         />

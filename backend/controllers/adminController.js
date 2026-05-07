@@ -88,9 +88,12 @@ const updateNGO = async (req, res) => {
             ngo.ngoName = req.body.ngoName || ngo.ngoName;
             ngo.email = req.body.email || ngo.email;
             ngo.phone = req.body.phone || ngo.phone;
-            ngo.registrationNumber = req.body.registrationNumber || ngo.registrationNumber;
-            ngo.panNumber = req.body.panNumber || ngo.panNumber;
             ngo.address = req.body.address || ngo.address;
+            ngo.darpanId = req.body.darpanId || ngo.darpanId;
+            ngo.state = req.body.state || ngo.state;
+            ngo.district = req.body.district || ngo.district;
+            ngo.sector = req.body.sector || ngo.sector;
+            ngo.ngoType = req.body.ngoType || ngo.ngoType;
             const updatedNGO = await ngo.save();
             res.json(updatedNGO);
         } else {

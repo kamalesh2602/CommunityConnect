@@ -1,0 +1,34 @@
+[
+    {
+        "ngoName": "GNANA Deepam Sevai Maiyam",
+        "darpanId": "DARP001",
+        "state": "Tamil Nadu",
+        "district": "KRISHNAGIRI",
+        "sector": "Education",
+        "ngoType": "Section 8 Company"
+    },
+    {
+        "ngoName": "Helping Hands Foundation",
+        "darpanId": "DARP002",
+        "state": "Maharashtra",
+        "district": "MUMBAI",
+        "sector": "Healthcare",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Green Future Society",
+        "darpanId": "DARP003",
+        "state": "Karnataka",
+        "district": "BENGALURU",
+        "sector": "Environment",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Rural Women Welfare Trust",
+        "darpanId": "DARP004",
+        "state": "Tamil Nadu",
+        "district": "CHENNAI",
+        "sector": "Women Empowerment",
+        "ngoType": "Trust"
+    }
+]
