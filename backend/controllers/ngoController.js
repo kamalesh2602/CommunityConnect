@@ -2,19 +2,72 @@ const NGO = require('../models/NGO');
 const generateToken = require('../utils/generateToken');
 const sendEmail = require('../utils/sendemails');
 const crypto = require('crypto');
+const { verifyNGOWithMockRegistry } = require('../services/ngoVerificationService');
 
 // Register NGO
 const registerNGO = async (req, res) => {
     try {
-        const { ngoName, email, password, phone, registrationNumber, panNumber, address } = req.body;
+        const {
+            ngoName,
+            email,
+            password,
+            phone,
+            address,
+            darpanId,
+            state,
+            district,
+            sector,
+            ngoType
+        } = req.body;
 
         const ngoExists = await NGO.findOne({ email });
         if (ngoExists) {
             return res.status(400).json({ message: 'NGO already exists' });
         }
 
+        const requiredFields = {
+            ngoName,
+            email,
+            password,
+            phone,
+            address,
+            darpanId,
+            state,
+            district,
+            sector,
+            ngoType
+        };
+        const missingFields = Object.entries(requiredFields)
+            .filter(([, value]) => !String(value || '').trim())
+            .map(([field]) => field);
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                message: `Missing required NGO registration fields: ${missingFields.join(', ')}`
+            });
+        }
+
+        const verificationResult = await verifyNGOWithMockRegistry({
+            ngoName,
+            darpanId,
+            state,
+            district,
+            sector,
+            ngoType
+        });
+
         const ngo = await NGO.create({
-            ngoName, email, password, phone, registrationNumber, panNumber, address
+            ngoName,
+            email,
+            password,
+            phone,
+            address,
+            darpanId,
+            state,
+            district,
+            sector,
+            ngoType,
+            verified: verificationResult.verified
         });
 
         if (ngo) {
@@ -23,6 +76,7 @@ const registerNGO = async (req, res) => {
                 ngoName: ngo.ngoName,
                 email: ngo.email,
                 verified: ngo.verified,
+                verificationMessage: ngo.verified ? 'NGO Verified Successfully' : 'Verification Failed',
                 role: 'ngo',
                 token: generateToken(ngo._id, 'ngo')
             });
@@ -161,9 +215,12 @@ const updateNGOProfile = async (req, res) => {
             ngo.ngoName = req.body.ngoName || ngo.ngoName;
             ngo.email = req.body.email || ngo.email;
             ngo.phone = req.body.phone || ngo.phone;
-            ngo.registrationNumber = req.body.registrationNumber || ngo.registrationNumber;
-            ngo.panNumber = req.body.panNumber || ngo.panNumber;
             ngo.address = req.body.address || ngo.address;
+            ngo.darpanId = req.body.darpanId || ngo.darpanId;
+            ngo.state = req.body.state || ngo.state;
+            ngo.district = req.body.district || ngo.district;
+            ngo.sector = req.body.sector || ngo.sector;
+            ngo.ngoType = req.body.ngoType || ngo.ngoType;
 
             if (req.body.password) {
                 ngo.password = req.body.password;

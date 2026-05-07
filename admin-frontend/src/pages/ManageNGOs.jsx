@@ -52,7 +52,8 @@ const ManageNGOs = () => {
                         <tr className="bg-gray-50 border-b border-gray-100 text-sm font-bold text-gray-500 uppercase tracking-wide">
                             <th className="px-6 py-4">NGO Name</th>
                             <th className="px-6 py-4">Email</th>
-                            <th className="px-6 py-4">Reg No.</th>
+                            <th className="px-6 py-4">Darpan ID</th>
+                            <th className="px-6 py-4">Sector</th>
                             <th className="px-6 py-4 text-center">Status</th>
                             <th className="px-6 py-4 text-right">Actions</th>
                         </tr>
@@ -62,7 +63,8 @@ const ManageNGOs = () => {
                             <tr key={ngo._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                                 <td className="px-6 py-4 font-semibold text-gray-800">{ngo.ngoName}</td>
                                 <td className="px-6 py-4 text-gray-600">{ngo.email}</td>
-                                <td className="px-6 py-4 text-gray-600 font-mono text-sm mt-1">{ngo.registrationNumber}</td>
+                                <td className="px-6 py-4 text-gray-600 font-mono text-sm mt-1">{ngo.darpanId}</td>
+                                <td className="px-6 py-4 text-gray-600">{ngo.sector}</td>
                                 <td className="px-6 py-4 text-center">
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${ngo.verified ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                                         {ngo.verified ? <CheckCircle size={14} /> : <XCircle size={14} />}
@@ -87,7 +89,7 @@ const ManageNGOs = () => {
                             </tr>
                         ))}
                         {ngos.length === 0 && (
-                            <tr><td colSpan="5" className="p-8 text-center text-gray-500">No NGOs found.</td></tr>
+                            <tr><td colSpan="6" className="p-8 text-center text-gray-500">No NGOs found.</td></tr>
                         )}
                     </tbody>
                 </table>

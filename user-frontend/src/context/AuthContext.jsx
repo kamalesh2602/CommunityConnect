@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
             const { data } = await axios.post(`${import.meta.env.VITE_API_URL}${endpoint}`, userData);
             setUser(data);
             localStorage.setItem('userInfo', JSON.stringify(data));
-            return { success: true };
+            return { success: true, data };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Registration failed' };
         }

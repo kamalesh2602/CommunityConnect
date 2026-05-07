@@ -124,8 +124,16 @@ const BrowseNGOs = () => {
                                     <p className="text-gray-800 font-semibold">{selectedNgo.address}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Registration No.</p>
-                                    <p className="text-gray-800 font-semibold">{selectedNgo.registrationNumber}</p>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Darpan ID</p>
+                                    <p className="text-gray-800 font-semibold">{selectedNgo.darpanId}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sector</p>
+                                    <p className="text-gray-800 font-semibold">{selectedNgo.sector}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">District</p>
+                                    <p className="text-gray-800 font-semibold">{selectedNgo.district}, {selectedNgo.state}</p>
                                 </div>
                             </div>
 

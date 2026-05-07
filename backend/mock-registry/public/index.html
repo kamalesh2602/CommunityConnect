@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGO Darpan Mock Registry</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <header class="top-bar">
+        <div>
+            <p class="eyebrow">Government of India</p>
+            <h1>NGO Darpan Registry Search</h1>
+        </div>
+        <span class="badge">Mock Portal</span>
+    </header>
+
+    <main class="registry-shell">
+        <section class="search-panel" aria-labelledby="search-heading">
+            <h2 id="search-heading">Search Registered NGO</h2>
+            <form id="searchForm" class="search-grid">
+                <label>
+                    State
+                    <select id="state" name="state">
+                        <option value="">All States</option>
+                    </select>
+                </label>
+                <label>
+                    District
+                    <select id="district" name="district">
+                        <option value="">All Districts</option>
+                    </select>
+                </label>
+                <label>
+                    Sector
+                    <select id="sector" name="sector">
+                        <option value="">All Sectors</option>
+                    </select>
+                </label>
+                <label>
+                    NGO Type
+                    <select id="ngoType" name="ngoType">
+                        <option value="">All Types</option>
+                    </select>
+                </label>
+                <label>
+                    NGO Name
+                    <input id="ngoName" name="ngoName" type="search" placeholder="Enter NGO name">
+                </label>
+                <label>
+                    Darpan ID
+                    <input id="darpanId" name="darpanId" type="search" placeholder="Enter Darpan ID">
+                </label>
+                <button id="searchButton" type="submit">Search</button>
+                <button id="resetButton" type="button">Reset</button>
+            </form>
+        </section>
+
+        <section class="results-panel" aria-live="polite">
+            <div class="results-heading">
+                <h2>Search Results</h2>
+                <span id="resultCount">0 records</span>
+            </div>
+            <div id="results" class="results"></div>
+        </section>
+    </main>
+
+    <script src="./script.js"></script>
+</body>
+</html>

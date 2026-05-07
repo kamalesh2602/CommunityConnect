@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 // existing routes
@@ -22,6 +23,7 @@ const app = express();
 // middlewares
 app.use(cors());
 app.use(express.json());
+app.use('/mock-registry', express.static(path.join(__dirname, 'mock-registry')));
 
 // request logger
 app.use((req, res, next) => {
