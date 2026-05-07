@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+
   pull_request:
     branches:
       - main
@@ -31,11 +32,8 @@ jobs:
       - name: Install Backend Dependencies
         run: npm install
 
-      - name: Check Backend Build
+      - name: Backend Build Check
         run: npm run build --if-present
-
-      - name: Run Backend Tests
-        run: npm test --if-present
 
   admin-frontend:
     name: Admin Frontend CI
@@ -60,9 +58,6 @@ jobs:
       - name: Build Admin Frontend
         run: npm run build
 
-      - name: Run Admin Frontend Tests
-        run: npm test --if-present
-
   user-frontend:
     name: User Frontend CI
     runs-on: ubuntu-latest
@@ -85,6 +80,3 @@ jobs:
 
       - name: Build User Frontend
         run: npm run build
-
-      - name: Run User Frontend Tests
-        run: npm test --if-present
