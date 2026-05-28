@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const connectDB = require('./config/db');
 
@@ -19,9 +21,15 @@ const paymentRoutes = require('./routes/paymentRoutes');
 connectDB();
 
 const app = express();
+app.set('trust proxy', 1); // this is used to get correct client IP when behind a proxy (like in production with services like Heroku ,Render etc.)
 
 // middlewares
 app.use(cors());
+app.use(
+    helmet({
+        contentSecurityPolicy: false
+    })
+);
 app.use(express.json());
 app.use('/data', express.static(path.join(__dirname, '..', 'data')));
 app.use('/mock-registry', express.static(path.join(__dirname, 'mock-registry')));
@@ -32,6 +40,16 @@ app.use((req, res, next) => {
     next();
 });
 
+//express-rate-limit configuration
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 mins
+    max: 100,
+    message: {
+        message: 'Too many requests, please try again later.'
+    }
+});
+
+app.use('/api', limiter);
 // routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/volunteer', volunteerRoutes);
