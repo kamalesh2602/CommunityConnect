@@ -80,6 +80,12 @@ This platform is **requirement-driven**, meaning:
 - Integrated with **Razorpay (Test Mode)**
 - Volunteers can donate to NGO requirements
 - Payments are securely verified and stored
+    - For demo :
+      -- Visa	4100 2800 0000 1007	
+      -- Mastercard	5500 6700 0000 1002
+      -- RuPay	6527 6589 0000 1005
+      -- Diners	3608 280009 1007
+      -- Amex	3402 560004 01007
 
 ---
 
