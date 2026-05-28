@@ -30,5 +30,165 @@
         "district": "Chennai",
         "sector": "Women Empowerment",
         "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Bright Minds Education Trust",
+        "darpanId": "DARP005",
+        "state": "Tamil Nadu",
+        "district": "Coimbatore",
+        "sector": "Education",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Health For All Foundation",
+        "darpanId": "DARP006",
+        "state": "Kerala",
+        "district": "Ernakulam",
+        "sector": "Healthcare",
+        "ngoType": "Section 8 Company"
+    },
+    {
+        "ngoName": "Clean Earth Society",
+        "darpanId": "DARP007",
+        "state": "Karnataka",
+        "district": "Mysuru",
+        "sector": "Environment",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Women Rise Foundation",
+        "darpanId": "DARP008",
+        "state": "Telangana",
+        "district": "Hyderabad",
+        "sector": "Women Empowerment",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Future Farmers Association",
+        "darpanId": "DARP009",
+        "state": "Punjab",
+        "district": "Ludhiana",
+        "sector": "Agriculture",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Youth Development Initiative",
+        "darpanId": "DARP010",
+        "state": "Delhi",
+        "district": "New Delhi",
+        "sector": "Youth Development",
+        "ngoType": "Section 8 Company"
+    },
+    {
+        "ngoName": "Smile Child Welfare Trust",
+        "darpanId": "DARP011",
+        "state": "West Bengal",
+        "district": "Kolkata",
+        "sector": "Child Welfare",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Vision Rural Development Society",
+        "darpanId": "DARP012",
+        "state": "Odisha",
+        "district": "Bhubaneswar",
+        "sector": "Rural Development",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Care Elder Foundation",
+        "darpanId": "DARP013",
+        "state": "Tamil Nadu",
+        "district": "Madurai",
+        "sector": "Senior Citizen Welfare",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Hope Disability Support Trust",
+        "darpanId": "DARP014",
+        "state": "Gujarat",
+        "district": "Ahmedabad",
+        "sector": "Disability Support",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Green Village Mission",
+        "darpanId": "DARP015",
+        "state": "Rajasthan",
+        "district": "Jaipur",
+        "sector": "Environment",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Education First Society",
+        "darpanId": "DARP016",
+        "state": "Uttar Pradesh",
+        "district": "Lucknow",
+        "sector": "Education",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Healthy Nation Trust",
+        "darpanId": "DARP017",
+        "state": "Haryana",
+        "district": "Gurugram",
+        "sector": "Healthcare",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Skill India Foundation",
+        "darpanId": "DARP018",
+        "state": "Madhya Pradesh",
+        "district": "Bhopal",
+        "sector": "Skill Development",
+        "ngoType": "Section 8 Company"
+    },
+    {
+        "ngoName": "Water For Life Society",
+        "darpanId": "DARP019",
+        "state": "Maharashtra",
+        "district": "Pune",
+        "sector": "Water Conservation",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Empower Communities Trust",
+        "darpanId": "DARP020",
+        "state": "Tamil Nadu",
+        "district": "Salem",
+        "sector": "Community Development",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Digital Literacy Mission",
+        "darpanId": "DARP021",
+        "state": "Karnataka",
+        "district": "Bengaluru Rural",
+        "sector": "Education",
+        "ngoType": "Section 8 Company"
+    },
+    {
+        "ngoName": "Food For Everyone Foundation",
+        "darpanId": "DARP022",
+        "state": "Andhra Pradesh",
+        "district": "Visakhapatnam",
+        "sector": "Hunger Relief",
+        "ngoType": "Trust"
+    },
+    {
+        "ngoName": "Save Nature Collective",
+        "darpanId": "DARP023",
+        "state": "Uttarakhand",
+        "district": "Dehradun",
+        "sector": "Environment",
+        "ngoType": "Society"
+    },
+    {
+        "ngoName": "Rural Health Outreach",
+        "darpanId": "DARP024",
+        "state": "Bihar",
+        "district": "Patna",
+        "sector": "Healthcare",
+        "ngoType": "Section 8 Company"
     }
 ]
