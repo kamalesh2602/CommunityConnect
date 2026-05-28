@@ -143,8 +143,7 @@ module.exports = {
 
 */
 
-
-const ngos = require('../../mock-registry/data/ngos.json');
+const ngos = require('../mock-registry/data/ngos.json');
 
 const normalize = (value) =>
     String(value || '').trim().toLowerCase();
