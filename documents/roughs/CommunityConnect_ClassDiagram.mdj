@@ -1,0 +1,244 @@
+{
+  "_type": "Project",
+  "_id": "project1",
+  "name": "CommunityConnect",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "_id": "model1",
+      "name": "Class Diagram",
+      "ownedElements": [
+        {
+          "_type": "UMLClass",
+          "_id": "class1",
+          "name": "User",
+          "isAbstract": true,
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "id",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "name",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "email",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "password",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "role",
+              "type": "String"
+            }
+          ],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "class2",
+          "name": "Volunteer",
+          "isAbstract": false,
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "followedOrganizations",
+              "type": "List<Organization>"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "donations",
+              "type": "List<Donation>"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "activityHistory",
+              "type": "List<String>"
+            }
+          ],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "class3",
+          "name": "Organization",
+          "isAbstract": false,
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "followers",
+              "type": "List<Volunteer>"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "postedRequirements",
+              "type": "List<Requirement>"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "orgDetails",
+              "type": "OrganizationProfile"
+            }
+          ],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "class4",
+          "name": "Admin",
+          "isAbstract": false,
+          "attributes": [],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "name": "verifyOrganization"
+            },
+            {
+              "_type": "UMLOperation",
+              "name": "manageOrganizations"
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "class5",
+          "name": "Requirement",
+          "isAbstract": false,
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "reqId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "orgId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "title",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "description",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "deadline",
+              "type": "Date"
+            }
+          ],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "class6",
+          "name": "Donation",
+          "isAbstract": false,
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "donationId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "volunteerId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "orgId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "amount",
+              "type": "Float"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "date",
+              "type": "Date"
+            }
+          ],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "class7",
+          "name": "ChatMessage",
+          "isAbstract": false,
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "messageId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "senderId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "receiverId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "timestamp",
+              "type": "DateTime"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "content",
+              "type": "String"
+            }
+          ],
+          "operations": []
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "class8",
+          "name": "OrganizationProfile",
+          "isAbstract": false,
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "orgId",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "mission",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "contactInfo",
+              "type": "String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "location",
+              "type": "String"
+            }
+          ],
+          "operations": []
+        }
+      ]
+    }
+  ]
+}
