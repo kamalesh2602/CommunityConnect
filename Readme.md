@@ -58,6 +58,8 @@ This platform is **requirement-driven**, meaning:
 - Node.js
 - Express.js
 - MongoDB (Mongoose)
+- Helmet
+- Express-rate-limiter
 
 ### Other
 - JWT Authentication
