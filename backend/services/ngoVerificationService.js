@@ -1,5 +1,5 @@
 // Original NGO Darpan website: https://ngodarpan.gov.in/#/search-ngo
-
+/* till line num 140 
 const puppeteer = require('puppeteer');
 
 const normalize = (value) => String(value || '').trim().toLowerCase();
@@ -134,6 +134,60 @@ const verifyNGOWithMockRegistry = async (submittedDetails) => {
         if (browser) {
             await browser.close();
         }
+    }
+};
+
+module.exports = {
+    verifyNGOWithMockRegistry
+};
+
+*/
+
+
+const ngos = require('../../mock-registry/data/ngos.json');
+
+const normalize = (value) =>
+    String(value || '').trim().toLowerCase();
+
+const fieldsToCompare = [
+    'ngoName',
+    'darpanId',
+    'state',
+    'district',
+    'sector',
+    'ngoType'
+];
+
+const valuesMatch = (submitted, registry) =>
+    fieldsToCompare.every(
+        (field) =>
+            normalize(submitted[field]) ===
+            normalize(registry[field])
+    );
+
+const verifyNGOWithMockRegistry = async (submittedDetails) => {
+    try {
+        const matchedNGO = ngos.find((ngo) =>
+            normalize(ngo.darpanId) ===
+            normalize(submittedDetails.darpanId)
+        );
+
+        const verified =
+            matchedNGO &&
+            valuesMatch(submittedDetails, matchedNGO);
+
+        return {
+            verified: Boolean(verified),
+            matchedNGO: matchedNGO || null,
+            source: 'Local NGOs JSON'
+        };
+    } catch (error) {
+        return {
+            verified: false,
+            matchedNGO: null,
+            source: 'Local NGOs JSON',
+            error: error.message
+        };
     }
 };
 
