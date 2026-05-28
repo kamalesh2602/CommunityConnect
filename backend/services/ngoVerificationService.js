@@ -1,13 +1,12 @@
-// Originial ngo darpan website : https://ngodarpan.gov.in/#/search-ngo
+// Original NGO Darpan website: https://ngodarpan.gov.in/#/search-ngo
 
 const puppeteer = require('puppeteer');
 
 const normalize = (value) => String(value || '').trim().toLowerCase();
 
-const getRegistryUrl = () => (
+const getRegistryUrl = () =>
     process.env.MOCK_REGISTRY_URL ||
-    `http://localhost:${process.env.PORT || 5000}/mock-registry/public/index.html`
-);
+    `https://communityconnect-llkg.onrender.com/mock-registry/public/index.html`;
 
 const fieldsToCompare = [
     'ngoName',
@@ -18,31 +17,11 @@ const fieldsToCompare = [
     'ngoType'
 ];
 
-const valuesMatch = (submitted, scraped) => (
+const valuesMatch = (submitted, scraped) =>
     fieldsToCompare.every(
-        (field) => normalize(submitted[field]) === normalize(scraped[field])
-    )
-);
-
-const getBrowserLaunchOptions = () => {
-    const executablePath =
-        process.env.PUPPETEER_EXECUTABLE_PATH ||
-        '/opt/render/.cache/puppeteer/chrome/linux-148.0.7778.97/chrome-linux64/chrome';
-
-    console.log('Using Chrome:', executablePath);
-
-    return {
-        executablePath,
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--no-zygote',
-            '--single-process'
-        ]
-    };
-};
+        (field) =>
+            normalize(submitted[field]) === normalize(scraped[field])
+    );
 
 const scrapeFirstResult = async (page) => {
     const resultCard = await page.$('[data-testid="ngo-result"]');
@@ -74,12 +53,16 @@ const verifyNGOWithMockRegistry = async (submittedDetails) => {
 
     try {
         console.log('Registry URL:', registryUrl);
-        console.log(
-            'Chrome Path:',
-            process.env.PUPPETEER_EXECUTABLE_PATH
-        );
 
-        browser = await puppeteer.launch(getBrowserLaunchOptions());
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
+        });
 
         console.log('Browser launched successfully');
 
@@ -109,22 +92,18 @@ const verifyNGOWithMockRegistry = async (submittedDetails) => {
 
         await page.click('#searchButton');
 
-        console.log('Search button clicked');
+        console.log('Search submitted');
 
         await page.waitForFunction(
             () =>
                 document.querySelectorAll(
                     '[data-testid="ngo-result"]'
                 ).length > 0 ||
-                Boolean(
-                    document.querySelector(
-                        '[data-testid="no-results"]'
-                    )
+                document.querySelector(
+                    '[data-testid="no-results"]'
                 ),
             { timeout: 30000 }
         );
-
-        console.log('Search completed');
 
         const matchedNGO = await scrapeFirstResult(page);
 
