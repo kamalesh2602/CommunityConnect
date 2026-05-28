@@ -56,6 +56,11 @@ const registerNGO = async (req, res) => {
             ngoType
         });
 
+        console.log(
+    "VERIFICATION RESULT:",
+    JSON.stringify(verificationResult, null, 2)
+);
+
         const ngo = await NGO.create({
             ngoName,
             email,
