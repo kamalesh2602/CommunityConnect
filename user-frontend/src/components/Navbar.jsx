@@ -1,12 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, HeartHandshake, User, Settings, ChevronDown, MessageSquare, Bell } from 'lucide-react';
+import { ThemeContext } from '../context/ThemeContext';
+import { LogOut, HeartHandshake, User, Settings, ChevronDown, MessageSquare, Bell, Sun, Moon } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const { theme, toggleTheme } = useContext(ThemeContext);
     const navigate = useNavigate();
 
     const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -37,48 +39,57 @@ const Navbar = () => {
     }, [user]);
 
     return (
-        <nav className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50">
+        <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-slate-800 sticky top-0 z-50 transition-colors">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <NavLink to="/" className="flex items-center gap-2">
-                            <HeartHandshake className="text-primary-600" size={28} />
-                            <span className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-600">
+                            <HeartHandshake className="text-primary-600 dark:text-primary-400" size={28} />
+                            <span className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400">
                                 CommunityConnect
                             </span>
                         </NavLink>
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4 sm:gap-6">
                         {user ? (
                             <>
                                 {user.role === 'volunteer' && (
                                     <>
-                                        <NavLink to="/volunteer/dashboard" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Dashboard</NavLink>
-                                        <NavLink to="/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Requirements</NavLink>
-                                        <NavLink to="/volunteer/ngos" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Organizations</NavLink>
-                                        <NavLink to="/volunteer/activity" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>Activity</NavLink>
+                                        <NavLink to="/volunteer/dashboard" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100'}`}>Dashboard</NavLink>
+                                        <NavLink to="/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100'}`}>Requirements</NavLink>
+                                        <NavLink to="/volunteer/ngos" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100'}`}>Organizations</NavLink>
+                                        <NavLink to="/volunteer/activity" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100'}`}>Activity</NavLink>
                                     </>
                                 )}
                                 {user.role === 'ngo' && (
                                     <>
-                                        <NavLink to="/ngo/dashboard" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600' : 'text-gray-500 hover:text-gray-900'}`}>Dashboard</NavLink>
-                                        <NavLink to="/ngo/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600' : 'text-gray-500 hover:text-gray-900'}`}>Requirements</NavLink>
-                                        <NavLink to="/ngo/followers" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600' : 'text-gray-500 hover:text-gray-900'}`}>Followers</NavLink>
+                                        <NavLink to="/ngo/dashboard" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600 dark:text-secondary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100'}`}>Dashboard</NavLink>
+                                        <NavLink to="/ngo/requirements" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600 dark:text-secondary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100'}`}>Requirements</NavLink>
+                                        <NavLink to="/ngo/followers" className={({ isActive }) => `text-sm font-semibold transition-colors ${isActive ? 'text-secondary-600 dark:text-secondary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100'}`}>Followers</NavLink>
                                     </>
                                 )}
-                                <div className="h-6 w-px bg-gray-200"></div>
-                                
+                                <div className="h-6 w-px bg-gray-200 dark:bg-slate-800"></div>
+
+                                    {/* Theme Mode Quick Switch */}
+                                    <button
+                                        onClick={toggleTheme}
+                                        className="p-2 text-gray-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-all"
+                                        title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+                                    >
+                                        {theme === 'dark' ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} />}
+                                    </button>
+
                                     {/* Notifications */}
                                     <NotificationBell />
  
                                     {/* Chat Notification Icon */}
                                     <button 
                                         onClick={() => navigate('/chat')}
-                                        className="relative p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all"
+                                        className="relative p-2 text-gray-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-slate-800 rounded-full transition-all"
                                     >
                                         <MessageSquare size={22} />
                                         {unreadCount > 0 && (
-                                            <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white ring-2 ring-transparent transition-all">
+                                            <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 transition-all">
                                                 {unreadCount > 99 ? '99+' : unreadCount}
                                             </span>
                                         )}
@@ -88,33 +99,33 @@ const Navbar = () => {
                                     <div className="relative">
                                         <button 
                                             onClick={() => setShowProfileMenu(!showProfileMenu)}
-                                            className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200"
+                                            className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-gray-200 dark:hover:border-slate-700"
                                         >
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white text-xs font-bold">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
                                                 {(user.name || user.ngoName).charAt(0).toUpperCase()}
                                             </div>
                                             <div className="hidden sm:block text-left">
-                                                <p className="text-sm font-bold text-gray-800 leading-none">{user.name || user.ngoName}</p>
-                                                <p className="text-[10px] text-gray-500 mt-1 capitalize">{user.role}</p>
+                                                <p className="text-sm font-bold text-gray-800 dark:text-slate-100 leading-none">{user.name || user.ngoName}</p>
+                                                <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-1 capitalize">{user.role}</p>
                                             </div>
-                                            <ChevronDown size={14} className={`text-gray-400 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+                                            <ChevronDown size={14} className={`text-gray-400 dark:text-slate-500 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
                                         </button>
 
                                         {showProfileMenu && (
-                                            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-                                                <div className="px-4 py-3 border-b border-gray-50 mb-1">
-                                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Account</p>
+                                            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-slate-950/50 border border-gray-100 dark:border-slate-800 py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                                                <div className="px-4 py-3 border-b border-gray-50 dark:border-slate-800 mb-1">
+                                                    <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Account</p>
                                                 </div>
                                                 <div className="px-2 space-y-1">
                                                     <button 
                                                         onClick={() => { navigate(user.role === 'volunteer' ? '/volunteer/profile' : '/ngo/profile'); setShowProfileMenu(false); }}
-                                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-colors font-medium"
+                                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-medium text-left"
                                                     >
                                                         <Settings size={18} /> Edit Profile
                                                     </button>
                                                     <button 
                                                         onClick={handleLogout}
-                                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors font-medium text-left"
+                                                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors font-medium text-left"
                                                     >
                                                         <LogOut size={18} /> Logout
                                                     </button>
@@ -125,14 +136,20 @@ const Navbar = () => {
                                 </>
                             ) : (
                                 <div className="flex items-center gap-4">
-                                    <NavLink to="/login" className="text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors">Sign In</NavLink>
+                                    <button
+                                        onClick={toggleTheme}
+                                        className="p-2 text-gray-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-all"
+                                        title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+                                    >
+                                        {theme === 'dark' ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} />}
+                                    </button>
+                                    <NavLink to="/login" className="text-sm font-bold text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-slate-100 transition-colors">Sign In</NavLink>
                                     <NavLink to="/register" className="text-sm font-bold bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 shadow-sm hover:shadow-md transition-all active:scale-95">Get Started</NavLink>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
-            {/* Removed FloatingChatWidget as requested */}
         </nav>
     );
 };
