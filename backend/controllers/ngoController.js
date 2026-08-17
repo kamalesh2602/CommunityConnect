@@ -17,7 +17,8 @@ const registerNGO = async (req, res) => {
             state,
             district,
             sector,
-            ngoType
+            ngoType,
+            upiId
         } = req.body;
 
         const ngoExists = await NGO.findOne({ email });
@@ -72,6 +73,7 @@ const registerNGO = async (req, res) => {
             district,
             sector,
             ngoType,
+            upiId: upiId || '',
             verified: verificationResult.verified
         });
 
@@ -104,6 +106,7 @@ const loginNGO = async (req, res) => {
                 ngoName: ngo.ngoName,
                 email: ngo.email,
                 verified: ngo.verified,
+                upiId: ngo.upiId,
                 role: 'ngo',
                 token: generateToken(ngo._id, 'ngo')
             });
@@ -226,6 +229,9 @@ const updateNGOProfile = async (req, res) => {
             ngo.district = req.body.district || ngo.district;
             ngo.sector = req.body.sector || ngo.sector;
             ngo.ngoType = req.body.ngoType || ngo.ngoType;
+            if (req.body.upiId !== undefined) {
+                ngo.upiId = req.body.upiId;
+            }
 
             if (req.body.password) {
                 ngo.password = req.body.password;
@@ -237,6 +243,7 @@ const updateNGOProfile = async (req, res) => {
                 _id: updatedNGO._id,
                 ngoName: updatedNGO.ngoName,
                 email: updatedNGO.email,
+                upiId: updatedNGO.upiId,
                 role: 'ngo',
                 verified: updatedNGO.verified,
                 token: generateToken(updatedNGO._id, 'ngo')

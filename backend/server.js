@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 //express-rate-limit configuration
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 mins
-    max: 100,
+    max: 5000, // Increased limit for dev/testing and polling
     message: {
         message: 'Too many requests, please try again later.'
     }
