@@ -6,7 +6,7 @@ const NGO = require('../models/NGO');
 // @access  Private/Volunteer
 const createDonation = async (req, res) => {
     try {
-        const { ngoId, requirementId, amount, message } = req.body;
+        const { ngoId, requirementId, amount, message, paymentMethod, transactionId } = req.body;
 
         const requirement = await Requirement.findById(requirementId);
         if (!requirement) {
@@ -22,7 +22,9 @@ const createDonation = async (req, res) => {
             ngoId,
             requirementId,
             amount,
-            message
+            message,
+            paymentMethod: paymentMethod || 'razorpay',
+            transactionId: transactionId || ''
         });
 
         const createdDonation = await donation.save();

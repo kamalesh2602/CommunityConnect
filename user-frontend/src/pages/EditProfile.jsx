@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { User, Mail, Phone, MapPin, Hash, Lock, Save, ArrowLeft } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Hash, Lock, Save, ArrowLeft, QrCode } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const EditProfile = () => {
@@ -22,6 +22,7 @@ const EditProfile = () => {
         district: '',
         sector: '',
         ngoType: '',
+        upiId: '',
         aadhar: '',
         password: '',
         confirmPassword: ''
@@ -234,20 +235,34 @@ const EditProfile = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="space-y-1.5 md:col-span-2">
-                                    <label className="text-sm font-semibold text-gray-700 ml-1">Address</label>
-                                    <div className="relative">
-                                        <MapPin className="absolute left-3 top-3 text-gray-400" size={18} />
-                                        <textarea
-                                            name="address"
-                                            value={formData.address}
-                                            onChange={handleChange}
-                                            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition-all min-h-[100px]"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                            </>
+                                 <div className="space-y-1.5 md:col-span-2">
+                                     <label className="text-sm font-semibold text-gray-700 ml-1">NGO UPI ID (for direct UPI QR payments)</label>
+                                     <div className="relative">
+                                         <QrCode className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                         <input
+                                             type="text"
+                                             name="upiId"
+                                             value={formData.upiId || ''}
+                                             onChange={handleChange}
+                                             placeholder="e.g., ngo@upi or 9876543210@ybl"
+                                             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition-all"
+                                         />
+                                     </div>
+                                 </div>
+                                 <div className="space-y-1.5 md:col-span-2">
+                                     <label className="text-sm font-semibold text-gray-700 ml-1">Address</label>
+                                     <div className="relative">
+                                         <MapPin className="absolute left-3 top-3 text-gray-400" size={18} />
+                                         <textarea
+                                             name="address"
+                                             value={formData.address}
+                                             onChange={handleChange}
+                                             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition-all min-h-[100px]"
+                                             required
+                                         />
+                                     </div>
+                                 </div>
+                             </>
                         )}
                     </div>
 

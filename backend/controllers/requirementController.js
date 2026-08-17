@@ -56,7 +56,7 @@ const getRequirements = async (req, res) => {
         const requirements = await Requirement.find({}).populate({
             path: 'ngoId',
             match: { verified: true },
-            select: 'ngoName email verified'
+            select: 'ngoName email verified upiId'
         });
         const verifiedRequirements = requirements.filter(req => req.ngoId !== null);
         res.json(verifiedRequirements);
@@ -72,7 +72,7 @@ const getRequirementFeed = async (req, res) => {
 
         const requirements = await Requirement.find({ 
             ngoId: { $in: volunteer.followedNGOs } 
-        }).populate('ngoId', 'ngoName verified')
+        }).populate('ngoId', 'ngoName verified upiId')
         .sort({ createdAt: -1 });
 
         res.json(requirements);
@@ -85,7 +85,7 @@ const getRequirementFeed = async (req, res) => {
 // @access  Public
 const getRequirementById = async (req, res) => {
     try {
-        const requirement = await Requirement.findById(req.params.id).populate('ngoId', 'ngoName email verified');
+        const requirement = await Requirement.findById(req.params.id).populate('ngoId', 'ngoName email verified upiId');
         if (requirement) {
             res.json(requirement);
         } else {
@@ -100,7 +100,7 @@ const getRequirementById = async (req, res) => {
 // @access  Public or NGO
 const getNGORequirements = async (req, res) => {
     try {
-        const requirements = await Requirement.find({ ngoId: req.params.id });
+        const requirements = await Requirement.find({ ngoId: req.params.id }).populate('ngoId', 'ngoName email verified upiId');
         res.json(requirements);
     } catch (error) { res.status(500).json({ message: error.message }); }
 };

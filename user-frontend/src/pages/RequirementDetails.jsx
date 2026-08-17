@@ -2,7 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { IndianRupee, Calendar, Building2, MessageCircle, Heart, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { IndianRupee, Calendar, Building2, MessageCircle, Heart, ArrowLeft, CheckCircle2, QrCode, CreditCard, Copy, Check, AlertCircle } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 const RequirementDetails = () => {
     const { id } = useParams();
@@ -11,6 +12,10 @@ const RequirementDetails = () => {
     const [requirement, setRequirement] = useState(null);
     const [loading, setLoading] = useState(true);
     const [amount, setAmount] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('razorpay');
+    const [utrNumber, setUtrNumber] = useState('');
+    const [copiedUpi, setCopiedUpi] = useState(false);
+    const [submittingUpi, setSubmittingUpi] = useState(false);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -26,7 +31,7 @@ const RequirementDetails = () => {
         fetchDetails();
     }, [id]);
 
-    const handleDonate = async () => {
+    const handleRazorpayDonate = async () => {
         if (!user) return navigate('/login');
         if (!amount || amount <= 0) return alert('Please enter a valid amount');
 
@@ -53,6 +58,8 @@ const RequirementDetails = () => {
                             ngoId: requirement.ngoId._id,
                             requirementId: requirement._id,
                             amount: Number(amount),
+                            paymentMethod: 'razorpay',
+                            transactionId: response.razorpay_payment_id,
                             message: `Donation for ${requirement.title} (Payment ID: ${response.razorpay_payment_id})`
                         }, config);
 
@@ -84,6 +91,43 @@ const RequirementDetails = () => {
         }
     };
 
+    const handleUpiDonate = async (e) => {
+        e.preventDefault();
+        if (!user) return navigate('/login');
+        if (!amount || amount <= 0) return alert('Please enter a valid amount');
+
+        setSubmittingUpi(true);
+        try {
+            const config = { headers: { Authorization: `Bearer ${user.token}` } };
+            await axios.post(`${import.meta.env.VITE_API_URL}/donations`, {
+                ngoId: requirement.ngoId._id,
+                requirementId: requirement._id,
+                amount: Number(amount),
+                paymentMethod: 'upi_qr',
+                transactionId: utrNumber,
+                message: `Donation for ${requirement.title} via UPI QR${utrNumber ? ` (Ref: ${utrNumber})` : ''}`
+            }, config);
+
+            alert('Thank you! Your donation via UPI QR has been recorded.');
+            setAmount('');
+            setUtrNumber('');
+            // refresh data
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/requirements/${id}`);
+            setRequirement(data);
+        } catch (error) {
+            console.error('UPI donation failed:', error);
+            alert(error.response?.data?.message || 'Failed to record donation');
+        } finally {
+            setSubmittingUpi(false);
+        }
+    };
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        setCopiedUpi(true);
+        setTimeout(() => setCopiedUpi(false), 2000);
+    };
+
     const handleChat = () => {
         if (!user) return navigate('/login');
         navigate(`/chat/${requirement.ngoId._id}`, { state: { name: requirement.ngoId.ngoName } });
@@ -93,6 +137,8 @@ const RequirementDetails = () => {
     if (!requirement) return <div className="min-h-screen flex items-center justify-center font-bold text-red-400">Requirement not found</div>;
 
     const isFulfilled = requirement.status === 'fulfilled';
+    const ngoUpiId = requirement.ngoId?.upiId;
+    const upiUri = ngoUpiId ? `upi://pay?pa=${ngoUpiId}&pn=${encodeURIComponent(requirement.ngoId.ngoName)}&am=${amount || 0}&cu=INR&tn=${encodeURIComponent('Donation for ' + requirement.title)}` : '';
 
     return (
         <div className="py-8 max-w-4xl mx-auto">
@@ -143,7 +189,7 @@ const RequirementDetails = () => {
                             </div>
 
                             {requirement.deadline && (
-                                <div className="mb-8 flex items-center gap-3 text-gray-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                                <div className="mb-6 flex items-center gap-3 text-gray-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
                                     <Calendar size={20} className="text-amber-500" />
                                     <div>
                                         <p className="text-[10px] font-black uppercase tracking-tight text-amber-600">Deadline</p>
@@ -153,7 +199,7 @@ const RequirementDetails = () => {
                             )}
 
                             {!isFulfilled ? (
-                                <div className="space-y-4">
+                                <div className="space-y-5">
                                     <div>
                                         <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Donation Amount (₹)</label>
                                         <div className="relative">
@@ -167,12 +213,89 @@ const RequirementDetails = () => {
                                             />
                                         </div>
                                     </div>
-                                    <button 
-                                        onClick={handleDonate}
-                                        className="w-full py-4 bg-primary-600 text-white rounded-2xl font-black text-lg shadow-lg shadow-primary-600/20 hover:bg-primary-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <Heart size={20} /> Donate Now
-                                    </button>
+
+                                    {/* Payment Method Selector */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Select Payment Method</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setPaymentMethod('razorpay')}
+                                                className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all ${paymentMethod === 'razorpay' ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm' : 'border-gray-100 bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                                            >
+                                                <CreditCard size={20} />
+                                                <span>Razorpay</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setPaymentMethod('upi_qr')}
+                                                className={`p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all ${paymentMethod === 'upi_qr' ? 'border-emerald-600 bg-emerald-50 text-emerald-700 shadow-sm' : 'border-gray-100 bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                                            >
+                                                <QrCode size={20} />
+                                                <span>NGO UPI QR</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Razorpay Flow */}
+                                    {paymentMethod === 'razorpay' && (
+                                        <button 
+                                            onClick={handleRazorpayDonate}
+                                            className="w-full py-4 bg-primary-600 text-white rounded-2xl font-black text-lg shadow-lg shadow-primary-600/20 hover:bg-primary-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <Heart size={20} /> Donate via Razorpay
+                                        </button>
+                                    )}
+
+                                    {/* Direct NGO UPI QR Flow */}
+                                    {paymentMethod === 'upi_qr' && (
+                                        <div className="space-y-4 pt-2">
+                                            {ngoUpiId ? (
+                                                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center space-y-3">
+                                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Scan with GPay / PhonePe / Paytm</p>
+                                                    <div className="bg-white p-3 rounded-xl inline-block border border-gray-100 shadow-sm">
+                                                        <QRCodeSVG value={upiUri} size={160} level="H" />
+                                                    </div>
+                                                    
+                                                    <div className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-gray-200 text-xs">
+                                                        <span className="font-mono font-bold text-gray-700 truncate mr-2">{ngoUpiId}</span>
+                                                        <button 
+                                                            type="button"
+                                                            onClick={() => copyToClipboard(ngoUpiId)}
+                                                            className="text-primary-600 hover:text-primary-700 font-bold flex items-center gap-1 shrink-0"
+                                                        >
+                                                            {copiedUpi ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                                                            {copiedUpi ? 'Copied' : 'Copy'}
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="text-left space-y-1.5 pt-2">
+                                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide">UTR / Ref ID (Optional)</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={utrNumber}
+                                                            onChange={(e) => setUtrNumber(e.target.value)}
+                                                            placeholder="e.g. 324156789012"
+                                                            className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                                                        />
+                                                    </div>
+
+                                                    <button 
+                                                        onClick={handleUpiDonate}
+                                                        disabled={submittingUpi}
+                                                        className="w-full py-3.5 bg-emerald-600 text-white rounded-xl font-black text-sm shadow-md hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        <CheckCircle2 size={18} /> {submittingUpi ? 'Recording...' : 'Confirm UPI Donation'}
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 text-xs font-semibold flex items-start gap-2.5">
+                                                    <AlertCircle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+                                                    <span>This NGO has not configured a UPI ID yet. Please use Razorpay to complete your donation.</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="bg-gray-50 rounded-2xl p-6 text-center border-2 border-dashed border-gray-200">
