@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { PlusCircle, FileText, IndianRupee, CheckCircle } from 'lucide-react';
+import { PlusCircle, FileText, IndianRupee, CheckCircle, RotateCcw } from 'lucide-react';
 
 const PostRequirement = () => {
     const { user } = useContext(AuthContext);
@@ -29,7 +29,7 @@ const PostRequirement = () => {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
             await axios.patch(`${import.meta.env.VITE_API_URL}/requirements/${id}/status`, { status }, config);
             fetchMyRequirements();
-            alert(`Requirement marked as ${status}`);
+            alert(`Requirement marked as ${status === 'open' ? 'open (Reopened)' : 'fulfilled'}`);
         } catch (error) {
             console.error(error);
             alert('Failed to update status');
@@ -160,12 +160,19 @@ const PostRequirement = () => {
                                     {req.deadline ? `Due: ${new Date(req.deadline).toLocaleDateString()}` : 'No deadline'}
                                 </div>
                             </div>
-                            {req.status === 'open' && (
+                            {req.status === 'open' ? (
                                 <button 
                                     onClick={() => handleStatusUpdate(req._id, 'fulfilled')}
                                     className="w-full py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-sm hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 border border-emerald-100"
                                 >
                                     <CheckCircle size={16} /> Mark as Fulfilled
+                                </button>
+                            ) : (
+                                <button 
+                                    onClick={() => handleStatusUpdate(req._id, 'open')}
+                                    className="w-full py-2 bg-amber-50 text-amber-700 rounded-xl font-bold text-sm hover:bg-amber-100 transition-colors flex items-center justify-center gap-2 border border-amber-200"
+                                >
+                                    <RotateCcw size={16} /> Reopen Requirement (Revoke Fulfilled)
                                 </button>
                             )}
                         </div>
