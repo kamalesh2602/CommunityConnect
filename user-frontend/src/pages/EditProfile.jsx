@@ -5,7 +5,7 @@ import { User, Mail, Phone, MapPin, Hash, Lock, Save, ArrowLeft, QrCode } from '
 import { useNavigate } from 'react-router-dom';
 
 const EditProfile = () => {
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout, updateUser } = useContext(AuthContext);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -84,10 +84,12 @@ const EditProfile = () => {
             if (!payload.password) delete payload.password;
             delete payload.confirmPassword;
 
-            await axios.put(`${import.meta.env.VITE_API_URL}${endpoint}`, payload, config);
+            const { data: updatedUser } = await axios.put(`${import.meta.env.VITE_API_URL}${endpoint}`, payload, config);
+            if (updateUser) {
+                updateUser(updatedUser);
+            }
             
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
-            // Optionally refresh user context if names changed
             setTimeout(() => {
                 navigate(-1);
             }, 2000);

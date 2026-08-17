@@ -137,8 +137,8 @@ const RequirementDetails = () => {
     if (!requirement) return <div className="min-h-screen flex items-center justify-center font-bold text-red-400">Requirement not found</div>;
 
     const isFulfilled = requirement.status === 'fulfilled';
-    const ngoUpiId = requirement.ngoId?.upiId;
-    const upiUri = ngoUpiId ? `upi://pay?pa=${ngoUpiId}&pn=${encodeURIComponent(requirement.ngoId.ngoName)}&am=${amount || 0}&cu=INR&tn=${encodeURIComponent('Donation for ' + requirement.title)}` : '';
+    const ngoUpiId = requirement.ngoId?.upiId ? String(requirement.ngoId.upiId).trim() : '';
+    const upiUri = ngoUpiId ? `upi://pay?pa=${ngoUpiId}&pn=${encodeURIComponent(requirement.ngoId?.ngoName || 'NGO')}&am=${amount || 0}&cu=INR&tn=${encodeURIComponent('Donation for ' + requirement.title)}` : '';
 
     return (
         <div className="py-8 max-w-4xl mx-auto">

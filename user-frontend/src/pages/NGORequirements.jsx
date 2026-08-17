@@ -141,7 +141,7 @@ const NGORequirements = () => {
         setTimeout(() => setCopiedUpi(false), 2000);
     };
 
-    const ngoUpiId = selectedReq?.ngoId?.upiId;
+    const ngoUpiId = selectedReq?.ngoId?.upiId ? String(selectedReq.ngoId.upiId).trim() : '';
     const upiUri = ngoUpiId ? `upi://pay?pa=${ngoUpiId}&pn=${encodeURIComponent(ngoName)}&am=${amount || 0}&cu=INR&tn=${encodeURIComponent('Donation for ' + (selectedReq?.title || 'NGO'))}` : '';
 
     return (

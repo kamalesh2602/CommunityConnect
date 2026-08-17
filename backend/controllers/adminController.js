@@ -94,6 +94,9 @@ const updateNGO = async (req, res) => {
             ngo.district = req.body.district || ngo.district;
             ngo.sector = req.body.sector || ngo.sector;
             ngo.ngoType = req.body.ngoType || ngo.ngoType;
+            if (req.body.upiId !== undefined) {
+                ngo.upiId = String(req.body.upiId || '').trim();
+            }
             const updatedNGO = await ngo.save();
             res.json(updatedNGO);
         } else {

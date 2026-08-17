@@ -230,7 +230,7 @@ const updateNGOProfile = async (req, res) => {
             ngo.sector = req.body.sector || ngo.sector;
             ngo.ngoType = req.body.ngoType || ngo.ngoType;
             if (req.body.upiId !== undefined) {
-                ngo.upiId = req.body.upiId;
+                ngo.upiId = String(req.body.upiId || '').trim();
             }
 
             if (req.body.password) {
@@ -243,6 +243,13 @@ const updateNGOProfile = async (req, res) => {
                 _id: updatedNGO._id,
                 ngoName: updatedNGO.ngoName,
                 email: updatedNGO.email,
+                phone: updatedNGO.phone,
+                address: updatedNGO.address,
+                darpanId: updatedNGO.darpanId,
+                state: updatedNGO.state,
+                district: updatedNGO.district,
+                sector: updatedNGO.sector,
+                ngoType: updatedNGO.ngoType,
                 upiId: updatedNGO.upiId,
                 role: 'ngo',
                 verified: updatedNGO.verified,
