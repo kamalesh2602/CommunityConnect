@@ -1,14 +1,23 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { Heart, ArrowLeft, IndianRupee, Calendar } from 'lucide-react';
+import { Heart, ArrowLeft, IndianRupee, Calendar, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { exportTransactionsPDF } from '../utils/pdfExporter';
 
 const VolunteerActivity = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [donations, setDonations] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const handleExportPDF = () => {
+        exportTransactionsPDF({
+            user,
+            transactions: donations,
+            role: 'volunteer'
+        });
+    };
 
     useEffect(() => {
         const fetchDonations = async () => {
@@ -47,8 +56,16 @@ const VolunteerActivity = () => {
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h2 className="text-xl font-bold text-gray-900">Donation History</h2>
+                    {donations.length > 0 && (
+                        <button
+                            onClick={handleExportPDF}
+                            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-sm shadow-sm transition-all"
+                        >
+                            <Download size={16} /> Export PDF
+                        </button>
+                    )}
                 </div>
                 {donations.length > 0 ? (
                     <div className="overflow-x-auto">
