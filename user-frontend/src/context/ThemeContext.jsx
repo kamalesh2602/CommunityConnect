@@ -4,9 +4,7 @@ export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme) return storedTheme;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        return localStorage.getItem('theme') || 'light';
     });
 
     useEffect(() => {
