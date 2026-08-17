@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 
 import Home from './pages/Home';
@@ -26,7 +27,7 @@ import EditProfile from './pages/EditProfile';
 const PrivateRoute = ({ allowedRole }) => {
   const { user, loading } = React.useContext(AuthContext);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center dark:bg-slate-950 dark:text-slate-100">Loading...</div>;
 
   if (!user) return <Navigate to="/login" />;
 
@@ -35,7 +36,7 @@ const PrivateRoute = ({ allowedRole }) => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-950 dark:text-slate-100 transition-colors">
       <Navbar />
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <Outlet />
@@ -46,7 +47,7 @@ const PrivateRoute = ({ allowedRole }) => {
 
 const PublicRoute = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-950 dark:text-slate-100 transition-colors">
       <Navbar />
       <main className="flex-1 flex flex-col">
         <Outlet />
@@ -57,8 +58,9 @@ const PublicRoute = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <Router>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
         <Routes>
           <Route element={<PublicRoute />}>
             <Route path="/" element={<Home />} />
@@ -93,6 +95,7 @@ const App = () => {
         </Routes>
       </Router>
     </AuthProvider>
+  </ThemeProvider>
   );
 };
 
