@@ -16,7 +16,7 @@ const Register = () => {
     const [role, setRole] = useState('volunteer');
     const [formData, setFormData] = useState({
         name: '', ngoName: '', email: '', aadhar: '', phone: '', password: '',
-        address: '', darpanId: '', state: '', district: '',
+        address: '', darpanId: '', state: '', district: '', upiId: '',
         sector: 'Education', ngoType: 'Section 8 Company'
     });
     const [stateDistrictOptions, setStateDistrictOptions] = useState({});
@@ -82,7 +82,8 @@ const Register = () => {
                 state: formData.state,
                 district: formData.district,
                 sector: formData.sector,
-                ngoType: formData.ngoType
+                ngoType: formData.ngoType,
+                upiId: formData.upiId
             };
 
         const res = await register(role, dataToSend);
@@ -224,6 +225,10 @@ const Register = () => {
                                             <select name="ngoType" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.ngoType} required>
                                                 {ngoTypeOptions.map(type => <option key={type} value={type}>{type}</option>)}
                                             </select>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-bold text-gray-700 mb-1.5">NGO UPI ID <span className="text-gray-400 font-normal">(Optional, for direct UPI QR donations)</span></label>
+                                            <input type="text" name="upiId" placeholder="e.g., myngo@upi or 9876543210@ybl" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all bg-white text-gray-800 font-medium" onChange={handleChange} value={formData.upiId} />
                                         </div>
                                     </div>
                                 </div>

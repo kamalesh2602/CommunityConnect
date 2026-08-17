@@ -12,6 +12,7 @@ const ngoSchema = new mongoose.Schema({
     district: { type: String },
     sector: { type: String },
     ngoType: { type: String },
+    upiId: { type: String, trim: true, default: '' },
     verified: { type: Boolean, default: false },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Volunteer' }],
     resetPasswordToken: String,
