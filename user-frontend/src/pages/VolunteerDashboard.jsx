@@ -54,31 +54,31 @@ const VolunteerDashboard = () => {
     return (
         <div className="py-8">
             <header className="mb-12">
-                <h1 className="text-4xl font-black text-gray-900 mb-2 tracking-tight">Hello, {user.name}</h1>
-                <p className="text-gray-500 font-medium text-lg">Here's what's happening in your community today.</p>
+                <h1 className="text-4xl font-black text-gray-900 dark:text-slate-100 mb-2 tracking-tight">Hello, {user.name}</h1>
+                <p className="text-gray-500 dark:text-slate-400 font-medium text-lg">Here's what's happening in your community today.</p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                    <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-800">
+                    <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4">
                         <Heart size={24} />
                     </div>
-                    <p className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-1">Total Impact</p>
-                    <h3 className="text-3xl font-black text-gray-800">₹{stats.donatedAmount.toLocaleString()}</h3>
+                    <p className="text-gray-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">Total Impact</p>
+                    <h3 className="text-3xl font-black text-gray-800 dark:text-slate-100">₹{stats.donatedAmount.toLocaleString()}</h3>
                 </div>
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-800">
+                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-4">
                         <Building2 size={24} />
                     </div>
-                    <p className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-1">Organizations</p>
-                    <h3 className="text-3xl font-black text-gray-800">{stats.followedNGOs}</h3>
+                    <p className="text-gray-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">Organizations</p>
+                    <h3 className="text-3xl font-black text-gray-800 dark:text-slate-100">{stats.followedNGOs}</h3>
                 </div>
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                    <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-4">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-slate-800">
+                    <div className="w-12 h-12 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center mb-4">
                         <Bell size={24} />
                     </div>
-                    <p className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-1">Messages</p>
-                    <h3 className="text-3xl font-black text-gray-800">{stats.unreadNotifications}</h3>
+                    <p className="text-gray-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">Messages</p>
+                    <h3 className="text-3xl font-black text-gray-800 dark:text-slate-100">{stats.unreadNotifications}</h3>
                 </div>
                 <button 
                     onClick={() => navigate('/volunteer/activity')}
@@ -94,10 +94,10 @@ const VolunteerDashboard = () => {
 
             <section>
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight">Recent Requirements</h2>
+                    <h2 className="text-2xl font-black text-gray-900 dark:text-slate-100 tracking-tight">Recent Requirements</h2>
                     <button 
                         onClick={() => navigate('/requirements')}
-                        className="text-primary-600 font-bold text-sm hover:underline flex items-center gap-1"
+                        className="text-primary-600 dark:text-primary-400 font-bold text-sm hover:underline flex items-center gap-1"
                     >
                         View All <ChevronRight size={16} />
                     </button>
@@ -115,11 +115,11 @@ const VolunteerDashboard = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-gray-50 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
-                        <p className="text-gray-500 font-medium">No recent requirements found. Try following more NGOs!</p>
+                    <div className="bg-gray-50 dark:bg-slate-900/50 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-slate-800">
+                        <p className="text-gray-500 dark:text-slate-400 font-medium">No recent requirements found. Try following more NGOs!</p>
                         <button 
                             onClick={() => navigate('/volunteer/ngos')}
-                            className="mt-4 text-primary-600 font-black"
+                            className="mt-4 text-primary-600 dark:text-primary-400 font-black"
                         >
                             Explore Organizations
                         </button>

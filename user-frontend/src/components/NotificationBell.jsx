@@ -67,20 +67,20 @@ const NotificationBell = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="relative p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all"
+                className="relative p-2 text-gray-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-slate-800 rounded-full transition-all"
             >
                 <Bell size={22} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white ring-2 ring-transparent transition-all">
+                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 ring-2 ring-transparent transition-all">
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {showDropdown && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="px-4 py-3 border-b border-gray-50 mb-1 flex justify-between items-center">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Notifications</p>
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-slate-950/50 border border-gray-100 dark:border-slate-800 py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 py-3 border-b border-gray-50 dark:border-slate-800/80 mb-1 flex justify-between items-center">
+                        <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">Notifications</p>
                     </div>
                     <div className="max-h-96 overflow-y-auto px-2 space-y-1">
                         {notifications.length > 0 ? (
@@ -88,27 +88,33 @@ const NotificationBell = () => {
                                 <div
                                     key={notif._id}
                                     onClick={() => handleNotificationClick(notif)}
-                                    className={`w-full flex flex-col gap-1 px-3 py-3 text-sm rounded-xl transition-colors cursor-pointer ${notif.read ? 'text-gray-500 hover:bg-gray-50' : 'text-gray-800 bg-primary-50/50 hover:bg-primary-50 border-l-4 border-primary-600'}`}
+                                    className={`w-full flex flex-col gap-1 px-3 py-3 text-sm rounded-xl transition-colors cursor-pointer ${
+                                        notif.read
+                                            ? 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/60'
+                                            : 'text-gray-800 dark:text-slate-200 bg-primary-50/60 dark:bg-primary-950/40 hover:bg-primary-50 dark:hover:bg-primary-900/40 border-l-4 border-primary-600 dark:border-primary-500'
+                                    }`}
                                 >
                                     <div className="flex justify-between items-start">
-                                        <p className={`font-bold leading-tight ${notif.read ? 'text-gray-700' : 'text-primary-900'}`}>{notif.message}</p>
+                                        <p className={`font-bold leading-tight ${notif.read ? 'text-gray-700 dark:text-slate-300' : 'text-primary-950 dark:text-primary-200'}`}>
+                                            {notif.message}
+                                        </p>
                                         {!notif.read && (
                                             <button
                                                 onClick={(e) => markAsRead(notif._id, e)}
-                                                className="text-primary-600 hover:text-primary-800 p-1"
+                                                className="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200 p-1 transition-colors"
                                                 title="Mark as read"
                                             >
                                                 <CheckCheck size={16} />
                                             </button>
                                         )}
                                     </div>
-                                    <p className="text-[10px] text-gray-400 font-medium">
+                                    <p className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">
                                         {new Date(notif.createdAt).toLocaleString()}
                                     </p>
                                 </div>
                             ))
                         ) : (
-                            <div className="py-8 text-center text-gray-400">
+                            <div className="py-8 text-center text-gray-400 dark:text-slate-500">
                                 <p className="text-sm font-medium">No notifications yet</p>
                             </div>
                         )}
