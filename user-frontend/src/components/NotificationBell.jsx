@@ -12,17 +12,24 @@ const NotificationBell = () => {
     const dropdownRef = useRef(null);
 
     const fetchNotifications = async () => {
-        if (!user) return;
+        if (!user || !user.token) return;
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
             const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/notifications`, config);
-            setNotifications(data);
+            setNotifications(data || []);
         } catch (error) {
-            console.error('Error fetching notifications:', error);
+            if (error.response?.status !== 401) {
+                console.error('Error fetching notifications:', error.message || error);
+            }
         }
     };
 
     useEffect(() => {
+        if (!user || !user.token) {
+            setNotifications([]);
+            return;
+        }
+
         fetchNotifications();
         const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
         return () => clearInterval(interval);

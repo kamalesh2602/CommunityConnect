@@ -7,12 +7,34 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const logout = () => {
+        setUser(null);
+        localStorage.removeItem('userInfo');
+    };
+
     useEffect(() => {
         const storedUser = localStorage.getItem('userInfo');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                localStorage.removeItem('userInfo');
+            }
         }
         setLoading(false);
+    }, []);
+
+    useEffect(() => {
+        const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    logout();
+                }
+                return Promise.reject(error);
+            }
+        );
+        return () => axios.interceptors.response.eject(interceptor);
     }, []);
 
     const login = async (role, credentials) => {
@@ -43,11 +65,6 @@ export const AuthProvider = ({ children }) => {
         const updated = { ...user, ...updatedData };
         setUser(updated);
         localStorage.setItem('userInfo', JSON.stringify(updated));
-    };
-
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('userInfo');
     };
 
     return (

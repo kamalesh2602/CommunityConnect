@@ -20,16 +20,22 @@ const Navbar = () => {
     };
 
     useEffect(() => {
+        if (!user || !user.token) {
+            setUnreadCount(0);
+            return;
+        }
+
         const fetchUnreadCount = async () => {
-            if (!user) return;
             try {
                 const config = {
                     headers: { Authorization: `Bearer ${user.token}` }
                 };
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/unread-count`, config);
-                setUnreadCount(data.unreadCount);
+                setUnreadCount(data?.unreadCount || 0);
             } catch (error) {
-                console.error('Error fetching unread count:', error);
+                if (error.response?.status !== 401) {
+                    console.error('Error fetching unread count:', error.message || error);
+                }
             }
         };
 

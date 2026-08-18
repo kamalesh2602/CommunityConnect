@@ -26,29 +26,32 @@ const NGODashboard = () => {
 
     useEffect(() => {
         const fetchDashboardData = async () => {
+            if (!user || !user.token) return;
             try {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
 
                 const { data: reqData } = await axios.get(`${import.meta.env.VITE_API_URL}/requirements/ngo/${user._id}`, config);
                 const { data: donData } = await axios.get(`${import.meta.env.VITE_API_URL}/donations/ngo`, config);
 
-                setDonations(donData);
-                const totalDonated = donData.reduce((acc, curr) => acc + curr.amount, 0);
+                setDonations(donData || []);
+                const totalDonated = (donData || []).reduce((acc, curr) => acc + curr.amount, 0);
 
                 const { data: unreadData } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/unread-count`, config);
 
                 setStats({
-                    postedRequirements: reqData.length,
-                    receivedDonations: donData.length,
+                    postedRequirements: (reqData || []).length,
+                    receivedDonations: (donData || []).length,
                     totalAmount: totalDonated,
-                    unreadMessages: unreadData.unreadCount
+                    unreadMessages: unreadData?.unreadCount || 0
                 });
 
             } catch (error) {
-                console.error(error);
+                if (error.response?.status !== 401) {
+                    console.error('Error fetching NGO dashboard data:', error.message || error);
+                }
             }
         };
-        if (user) fetchDashboardData();
+        if (user && user.token) fetchDashboardData();
     }, [user]);
 
     return (

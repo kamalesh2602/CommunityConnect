@@ -18,34 +18,37 @@ const VolunteerDashboard = () => {
 
     useEffect(() => {
         const fetchDashboardData = async () => {
+            if (!user || !user.token) return;
             try {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
                 
                 // Fetch stats
                 const { data: donationsData } = await axios.get(`${import.meta.env.VITE_API_URL}/donations/volunteer`, config);
-                const totalDonated = donationsData.reduce((acc, curr) => acc + curr.amount, 0);
+                const totalDonated = (donationsData || []).reduce((acc, curr) => acc + curr.amount, 0);
 
                 const { data: followedData } = await axios.get(`${import.meta.env.VITE_API_URL}/volunteer/followed-ngos`, config);
 
                 const { data: notificationsData } = await axios.get(`${import.meta.env.VITE_API_URL}/notifications`, config);
-                const unreadNotifs = notificationsData.filter(n => !n.read).length;
+                const unreadNotifs = (notificationsData || []).filter(n => !n.read).length;
 
                 setStats({
-                    followedNGOs: followedData.length,
+                    followedNGOs: (followedData || []).length,
                     donatedAmount: totalDonated,
-                    donationsCount: donationsData.length,
+                    donationsCount: (donationsData || []).length,
                     unreadNotifications: unreadNotifs
                 });
 
                 // Fetch recent requirements (last 3 from feed)
                 const { data: feedData } = await axios.get(`${import.meta.env.VITE_API_URL}/requirements/feed`, config);
-                setRecentRequirements(feedData.slice(0, 3));
+                setRecentRequirements((feedData || []).slice(0, 3));
 
             } catch (error) {
-                console.error('Error fetching dashboard data:', error);
+                if (error.response?.status !== 401) {
+                    console.error('Error fetching dashboard data:', error.message || error);
+                }
             }
         };
-        if (user) fetchDashboardData();
+        if (user && user.token) fetchDashboardData();
     }, [user]);
 
     return (

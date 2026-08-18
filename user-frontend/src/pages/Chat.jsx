@@ -20,15 +20,19 @@ const Chat = () => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
+        if (!user || !user.token) return;
+
         if (!recipientId) {
             const fetchChatList = async () => {
                 try {
                     const config = { headers: { Authorization: `Bearer ${user.token}` } };
                     const endpoint = user.role === 'volunteer' ? '/chat/volunteer' : '/chat/ngo';
                     const { data } = await axios.get(`${import.meta.env.VITE_API_URL}${endpoint}`, config);
-                    setChatList(data);
+                    setChatList(data || []);
                 } catch (error) {
-                    console.error('Failed fetching chat list', error);
+                    if (error.response?.status !== 401) {
+                        console.error('Failed fetching chat list:', error.message || error);
+                    }
                 } finally {
                     setLoading(false);
                 }
@@ -45,12 +49,14 @@ const Chat = () => {
                 const volunteerId = user.role === 'volunteer' ? user._id : recipientId;
                 
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/messages/${ngoId}/${volunteerId}`, config);
-                setMessages(data);
+                setMessages(data || []);
                 
                 // Mark as read
                 await axios.put(`${import.meta.env.VITE_API_URL}/chat/mark-read/${recipientId}`, {}, config);
             } catch (error) {
-                console.error('Error fetching messages:', error);
+                if (error.response?.status !== 401) {
+                    console.error('Error fetching messages:', error.message || error);
+                }
             } finally {
                 setLoading(false);
             }
